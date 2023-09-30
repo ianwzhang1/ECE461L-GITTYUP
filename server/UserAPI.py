@@ -1,17 +1,23 @@
-class UserAPI:
-    def __init__(self, driver):
-        self.__driver = driver
+from server.DatabaseAPI import DatabaseAPI
+from server.Utils import data_missing
 
-    def process(self, args: list[str]) -> str:
-        if args[0] == "add":
-            self.__driver.execute_query("CREATE (u:User)"
-                                        "SET u.name = $name", name="test")
-            return "add"
 
-        if args[0] == "test":
-            result = self.__driver.execute_query("MATCH (u:User)"
-                                        "RETURN u")
-            print(*result[0])
-            return "HAHAHAHAHA"
+class UserAPI(DatabaseAPI):
+    # POST request for adding user
+    def post_add(self, args: list[str], data) -> tuple[bool, object]:
+        if data_missing(('usr', 'pwd', 'name'), data):
+            return False, 'Missing POST data'
 
-        return "User: OK"
+        # Need to add a check for if user already exists
+
+        try:
+            self._driver.execute_query("CREATE (u:User)"
+                                       "SET u = {username: $usr, password: $pwd, dispname: $name}",
+                                       usr=data['usr'], pwd=data['pwd'], name=data['name'])
+        except Exception as e:
+            return False, e
+
+        return True, "Successfully added user"
+
+    def get_projects(self, args: list[str]) -> tuple[bool, object]:
+        return True, "A lot of projects"
