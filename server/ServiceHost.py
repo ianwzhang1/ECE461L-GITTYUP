@@ -10,6 +10,8 @@ from server.UserAPI import UserAPI
 from server.ProjectAPI import ProjectAPI
 from server.HardwareAPI import HardwareAPI
 
+import uuid
+
 # Server settings
 HOST_NAME = "localhost"
 PORT = 8080
@@ -23,10 +25,13 @@ with open('secrets.properties', 'rb') as config_file:
 graph_driver = GraphDatabase.driver(secrets['DB_URI'].data, auth=(secrets['DB_USER'].data, secrets['DB_PASS'].data))
 graph_driver.verify_connectivity()
 
+# Declare namespace for consistent UUID generation
+namespace = uuid.UUID('934c3fda-c00c-4457-b071-8d1193cd8a3c')
+
 # Build API handlers
-user_api = UserAPI(graph_driver)
-project_api = ProjectAPI(graph_driver)
-hardware_api = HardwareAPI(graph_driver)
+user_api = UserAPI(graph_driver, namespace)
+project_api = ProjectAPI(graph_driver, namespace)
+hardware_api = HardwareAPI(graph_driver, namespace)
 
 
 # Handle requests
@@ -35,14 +40,23 @@ class PythonServer(SimpleHTTPRequestHandler):
         print(self.path)
         path = self.path[1:].split('/')
 
+        last = len(path) - 1
+        pSplit = None
+        if '?' in path[last]:  # Contains path param
+            pSplit = path[last].split('?')
+            path[last] = pSplit[0]
+
+        paramsSet = pSplit[1].split('&') if pSplit is not None else None
+        params = dict((x[0], x[1]) for x in [e.split('=') for e in paramsSet]) if paramsSet is not None else None
+
         result = None
 
         if path[0] == 'user':
-            result = user_api.process(False, path[1:])
+            result = user_api.process(False, path[1:], params=params)
         elif path[0] == 'proj':
-            result = project_api.process(False, path[1:])
+            result = project_api.process(False, path[1:], params=params)
         elif path[0] == 'hset':
-            result = hardware_api.process(False, path[1:])
+            result = hardware_api.process(False, path[1:], params=params)
 
         if result[1] is None:
             response = 'No Response'
@@ -59,18 +73,22 @@ class PythonServer(SimpleHTTPRequestHandler):
         path = self.path[1:].split('/')
 
         data_string = self.rfile.read(int(self.headers['Content-Length']))
-        data = simplejson.loads(data_string)
-        result = None
+        try:
+            data = simplejson.loads(data_string)
+            result = None
 
-        if path[0] == 'user':
-            result = user_api.process(True, path[1:], data)
-        elif path[0] == 'proj':
-            result = project_api.process(True, path[1:], data)
-        elif path[0] == 'hset':
-            result = hardware_api.process(True, path[1:], data)
+            if path[0] == 'user':
+                result = user_api.process(True, path[1:], data=data)
+            elif path[0] == 'proj':
+                result = project_api.process(True, path[1:], data=data)
+            elif path[0] == 'hset':
+                result = hardware_api.process(True, path[1:], data=data)
 
-        if result[1] is None:
-            response = 'No Response'
+            if result[1] is None:
+                response = 'No Response'
+
+        except simplejson.JSONDecodeError:
+            result = (False, "Invalid JSON Body")
 
         response = str(result[1])  # Convert non-string return types
 
