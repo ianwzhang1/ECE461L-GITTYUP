@@ -38,6 +38,9 @@ class HardwareAPI(DatabaseAPI):
 
     def get_desc(self, args: list[str], params: dict[str, str]) -> tuple[bool, object]:
         try:
+            if not self.__hid_exists(params['hid']):
+                return False, "Hardware Set With That hid does not exist"
+            
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "RETURN h.desc", uuid=params['hid'])[0]
         except Exception as e:
@@ -45,15 +48,18 @@ class HardwareAPI(DatabaseAPI):
 
         return True, match[0].get('h.desc')
     
+    def __hid_exists(self, hid) -> bool:
+        match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
+                                               "RETURN h", uuid=hid)[0]  # 0 index unwraps EagerResult
+            
+        return len(match) > 0
+    
     def post_desc(self, args: list[str], data) -> tuple[bool, object]:
         if data_missing(('hid','desc'), data):
             return False, 'Missing POST data'
 
         try:
-            match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
-                                               "RETURN h", uuid=data['hid'])[0]  # 0 index unwraps EagerResult
-            
-            if len(match) == 0:
+            if not self.__hid_exists(data['hid']):
                 return False, "Hardware Set With That hid does not exist"
             
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
@@ -63,3 +69,33 @@ class HardwareAPI(DatabaseAPI):
             
         except Exception as e:
             return False, e
+        
+    def post_quant(self, args: list[str], data) -> tuple[bool, object]:
+        if data_missing(('hid', 'quant'), data):
+            return False, 'Missing POST data'
+        
+        try:
+            if not self.__hid_exists(data['hid']):
+                return False, "Hardware Set With That hid does not exist"
+            
+            match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
+                                               "SET h.quant = $quant ", quant=data['quant'], uuid=data["hid"])[0]
+
+            return True, True
+        
+        except Exception as e:
+            return False, e
+        
+    
+    def get_quant(self, args: list[str], params: dict[str, str]) -> tuple[bool, object]:
+        try:
+            if not self.__hid_exists(params['hid']):
+                return False, "Hardware Set With That hid does not exist"
+            
+            match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
+                                               "RETURN h.quant", uuid=params['hid'])[0]
+        except Exception as e:
+            return False, e
+
+        return True, match[0].get('h.quant')
+        
