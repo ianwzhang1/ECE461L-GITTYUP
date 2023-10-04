@@ -1,7 +1,7 @@
 import uuid
 
 
-class DatabaseAPI:
+class DatabaseProvider:
     def __init__(self, driver, namespace):
         self._driver = driver
         self._namespace = namespace
@@ -12,7 +12,7 @@ class DatabaseAPI:
                               callable(getattr(self, func)) and func.startswith('post_')}
 
     # Returns Success/Fail status and message which will get stringified later
-    def process(self, is_post: bool, args: list[str], data: str = None, params: dict[str, str] = None) -> tuple[
+    def process(self, is_post: bool, args: list[str], data=None, params: dict[str, str] = None) -> tuple[
         bool, object]:
 
         if len(args) == 0:

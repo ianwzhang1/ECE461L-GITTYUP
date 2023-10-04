@@ -1,17 +1,14 @@
 import simplejson
-import sys
-print(sys.path)
-import DatabaseAPI
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler  # Request handling
 from neo4j import GraphDatabase  # Graph DB
 from jproperties import Properties  # Config parsing
 
-from UserAPI import UserAPI
-from ProjectAPI import ProjectAPI
-from HardwareAPI import HardwareAPI
-
 import uuid
+
+from server.providers.hardware import HardwareProvider
+from server.providers.project import ProjectProvider
+from server.providers.user import UserProvider
 
 # Server settings
 HOST_NAME = "localhost"
@@ -30,9 +27,9 @@ graph_driver.verify_connectivity()
 namespace = uuid.UUID('934c3fda-c00c-4457-b071-8d1193cd8a3c')
 
 # Build API handlers
-user_api = UserAPI(graph_driver, namespace)
-project_api = ProjectAPI(graph_driver, namespace)
-hardware_api = HardwareAPI(graph_driver, namespace)
+user_api = UserProvider(graph_driver, namespace)
+project_api = ProjectProvider(graph_driver, namespace)
+hardware_api = HardwareProvider(graph_driver, namespace)
 
 
 # Handle requests

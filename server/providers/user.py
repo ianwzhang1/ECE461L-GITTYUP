@@ -1,8 +1,10 @@
-from DatabaseAPI import DatabaseAPI
-from Utils import data_missing
 import bcrypt
 
-class UserAPI(DatabaseAPI):
+from server.providers.database import DatabaseProvider
+from server.utils import data_missing
+
+
+class UserProvider(DatabaseProvider):
     # POST request for adding user
     def post_add(self, args: list[str], data) -> tuple[bool, object]:
         if data_missing(('usr', 'pwd', 'name'), data):
@@ -61,9 +63,7 @@ class UserAPI(DatabaseAPI):
                 return False, "Unknown username"
 
             salt = bytes(match[0].get('u.salt'), 'utf-8')
-            print(salt)
             hashed = bcrypt.hashpw(data['pwd'].encode('utf-8'), salt)
-            print(hashed.decode('utf-8'))
 
             if match[0].get('u.password') == hashed.decode('utf-8'):
                 return True, "Logged In"  # Need to return a sess id

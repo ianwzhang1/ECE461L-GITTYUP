@@ -1,7 +1,8 @@
-from DatabaseAPI import DatabaseAPI
-from Utils import data_missing
+from server.providers.database import DatabaseProvider
+from server.utils import data_missing
 
-class HardwareAPI(DatabaseAPI):
+
+class HardwareProvider(DatabaseProvider):
     def post_add(self, args: list[str], data) -> tuple[bool, object]:
         if data_missing(('name',), data):
             return False, 'Missing POST data'

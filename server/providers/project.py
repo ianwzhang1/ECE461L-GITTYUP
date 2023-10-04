@@ -1,7 +1,7 @@
-from DatabaseAPI import DatabaseAPI
+from server.providers.database import DatabaseProvider
 
 
-class ProjectAPI(DatabaseAPI):
+class ProjectProvider(DatabaseProvider):
     def post_add(self, args: list[str], data) -> tuple[bool, object]:
         print('add')
         return None
