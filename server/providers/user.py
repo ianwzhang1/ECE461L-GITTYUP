@@ -1,10 +1,13 @@
-import bcrypt
-
 from server.providers.database import DatabaseProvider
 from server.utils import data_missing
-
+import bcrypt
 
 class UserProvider(DatabaseProvider):
+    def uid_exists(self, uid) -> bool:
+        match = self._driver.execute_query("MATCH (u:User {uuid: $uuid})"
+                                               "RETURN u", uuid=str(uid))[0]  # 0 index unwraps EagerResult
+        return len(match) > 0
+
     # POST request for adding user
     def post_add(self, args: list[str], data) -> tuple[bool, object]:
         if data_missing(('usr', 'pwd', 'name'), data):
@@ -13,11 +16,7 @@ class UserProvider(DatabaseProvider):
         uuid = self.generate_uuid(data['usr'])
 
         try:
-            match = self._driver.execute_query("MATCH (u:User {uuid: $uuid})"
-                                               "RETURN u", uuid=str(uuid))[0]  # 0 index unwraps EagerResult
-
-            # Check if username already exists
-            if len(match) > 0:
+            if self.uid_exists(uuid):
                 return False, "Username already exists"
 
             salt = bcrypt.gensalt()
