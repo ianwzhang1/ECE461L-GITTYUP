@@ -24,7 +24,7 @@ class DatabaseAPI:
         else:
             if args[0] in self._get_actions:
                 return self._get_actions[args[0]](args[1:], params)
-
+            
         return False, 'Unsupported Operation'
 
     def generate_uuid(self, name) -> uuid.UUID:

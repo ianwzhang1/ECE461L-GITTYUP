@@ -1,14 +1,15 @@
 import simplejson
-
+import sys
+print(sys.path)
 import DatabaseAPI
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler  # Request handling
 from neo4j import GraphDatabase  # Graph DB
 from jproperties import Properties  # Config parsing
 
-from server.UserAPI import UserAPI
-from server.ProjectAPI import ProjectAPI
-from server.HardwareAPI import HardwareAPI
+from UserAPI import UserAPI
+from ProjectAPI import ProjectAPI
+from HardwareAPI import HardwareAPI
 
 import uuid
 

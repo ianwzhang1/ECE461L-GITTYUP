@@ -1,5 +1,5 @@
-from server.DatabaseAPI import DatabaseAPI
-from server.Utils import data_missing
+from DatabaseAPI import DatabaseAPI
+from Utils import data_missing
 import bcrypt
 
 class UserAPI(DatabaseAPI):

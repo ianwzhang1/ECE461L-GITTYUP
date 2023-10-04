@@ -1,4 +1,4 @@
-from server.DatabaseAPI import DatabaseAPI
+from DatabaseAPI import DatabaseAPI
 
 
 class ProjectAPI(DatabaseAPI):
