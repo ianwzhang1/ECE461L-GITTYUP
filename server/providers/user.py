@@ -1,5 +1,5 @@
-from server.providers.database import DatabaseProvider
-from server.utils import data_missing
+from providers.database import DatabaseProvider
+from utils import data_missing
 import bcrypt
 
 class UserProvider(DatabaseProvider):
@@ -32,13 +32,21 @@ class UserProvider(DatabaseProvider):
         return True, str(uuid)
 
     def get_projects(self, args: list[str], params: dict[str, str]) -> tuple[bool, object]:
+
         try:
-            match = self._driver.execute_query("MATCH (u:User {uuid: $uuid})"
-                                               "RETURN u.projects", uuid=params['uid'])[0]
+            uid = params['uid']
+            if not self.uid_exists(uid):
+                return False, "User with that uid does not exist"
+            
+            match = self._driver.execute_query("MATCH (u:User {uuid: $uid}) -[:MEMBER_OF]-> (p:Proj)"
+                                            " RETURN p.uuid",
+                                            uid = uid)
+            return True, [proj.get ('p.uuid') for proj in match[0]]
+            
         except Exception as e:
             return False, e
 
-        return True, match[0].get('u.projects')
+    
 
     def get_info(self, args: list[str], params: dict[str, str]) -> tuple[bool, object]:
         try:

@@ -1,5 +1,5 @@
-from server.providers.database import DatabaseProvider
-from server.utils import data_missing
+from providers.database import DatabaseProvider
+from utils import data_missing
 
 
 class HardwareProvider(DatabaseProvider):

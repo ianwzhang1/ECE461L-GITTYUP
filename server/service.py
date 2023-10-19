@@ -6,9 +6,9 @@ from jproperties import Properties  # Config parsing
 
 import uuid
 
-from server.providers.hardware import HardwareProvider
-from server.providers.project import ProjectProvider
-from server.providers.user import UserProvider
+from providers.hardware import HardwareProvider
+from providers.project import ProjectProvider
+from providers.user import UserProvider
 
 # Server settings
 HOST_NAME = "localhost"
@@ -81,6 +81,8 @@ class PythonServer(SimpleHTTPRequestHandler):
                 result = project_api.process(True, path[1:], data=data)
             elif path[0] == 'hset':
                 result = hardware_api.process(True, path[1:], data=data)
+            else:
+                print("Error")
 
             if result[1] is None:
                 response = 'No Response'
@@ -94,6 +96,7 @@ class PythonServer(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(response)))
         self.end_headers()
         self.wfile.write(bytes(response, "utf-8"))
+        
 
 
 if __name__ == '__main__':
