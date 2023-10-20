@@ -1,102 +1,100 @@
-from providers.database import DatabaseProvider
-from utils import data_missing
+from server.data_providers.database import DatabaseProvider
+from server.utils import data_missing
+from flask import Response
 
 
 class HardwareProvider(DatabaseProvider):
-    def post_add(self, args: list[str], data) -> tuple[bool, object]:
+    def post_add(self, args: list[str], data) -> Response:
         if data_missing(('name',), data):
-            return False, 'Missing POST data'
-        
+            return Response('Missing POST data', 400)
+
         uuid = self.generate_uuid(data['name'])
 
         try:
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "RETURN h", uuid=str(uuid))[0]  # 0 index unwraps EagerResult
-            
+
             if len(match) > 0:
-                return False, "Hardware Set With That Name Already Exists"
-            
+                return Response('Hardware Set With That Name Already Exists', 400)
+
             self._driver.execute_query("CREATE (h:Hset)"
                                        "SET h = {name: $name,"
                                        "uuid: $uuid}",
                                        name=data["name"],
-                                       uuid = str(uuid))
-            
+                                       uuid=str(uuid))
+
         except Exception as e:
-            return False, e
-        
-        return True, str(uuid)
-    
-    def get_allids(self, args: list[str], params: dict[str, str]) -> tuple[bool, object]:
+            return Response(str(e), 400)
+
+        return Response(str(uuid), 200)
+
+    def get_allids(self, args: list[str], params: dict[str, str]) -> Response:
         try:
             match = self._driver.execute_query("MATCH (h:Hset)"
                                                "RETURN h.uuid")
         except Exception as e:
-            return False, e
+            return Response(e, 400)
 
-        return True, [item.get ('h.uuid') for item in match[0]]
-    
+        return Response(str([item.get('h.uuid') for item in match[0]]), 200)
 
-    def get_desc(self, args: list[str], params: dict[str, str]) -> tuple[bool, object]:
+    def get_desc(self, args: list[str], params: dict[str, str]) -> Response:
         try:
             if not self.__hid_exists(params['hid']):
-                return False, "Hardware Set With That hid does not exist"
-            
+                return Response('Hardware Set With That hid does not exist', 400)
+
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "RETURN h.desc", uuid=params['hid'])[0]
         except Exception as e:
-            return False, e
+            return Response(str(e), 400)
 
-        return True, match[0].get('h.desc')
-    
+        return Response(match[0].get('h.desc'), 200)
+
     def __hid_exists(self, hid) -> bool:
         match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
-                                               "RETURN h", uuid=hid)[0]  # 0 index unwraps EagerResult
-            
+                                           "RETURN h", uuid=hid)[0]  # 0 index unwraps EagerResult
+
         return len(match) > 0
-    
-    def post_desc(self, args: list[str], data) -> tuple[bool, object]:
-        if data_missing(('hid','desc'), data):
-            return False, 'Missing POST data'
+
+    def post_desc(self, args: list[str], data) -> Response:
+        if data_missing(('hid', 'desc'), data):
+            return Response('Missing POST data', 400)
 
         try:
             if not self.__hid_exists(data['hid']):
-                return False, "Hardware Set With That hid does not exist"
-            
+                return Response('Hardware Set With That hid does not exist', 400)
+
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "SET h.desc = $desc ", desc=data['desc'], uuid=data["hid"])[0]
-            
-            return True, True
-            
+
+            return Response('True', 200)
+
         except Exception as e:
-            return False, e
-        
-    def post_quant(self, args: list[str], data) -> tuple[bool, object]:
+            return Response(str(e), 400)
+
+    def post_quant(self, args: list[str], data) -> Response:
         if data_missing(('hid', 'quant'), data):
-            return False, 'Missing POST data'
-        
+            return Response('Missing POST data', 400)
+
         try:
             if not self.__hid_exists(data['hid']):
-                return False, "Hardware Set With That hid does not exist"
-            
+                return Response('Hardware Set With That hid does not exist', 400)
+
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "SET h.quant = $quant ", quant=data['quant'], uuid=data["hid"])[0]
 
-            return True, True
-        
+            return Response('True', 200)
+
         except Exception as e:
-            return False, e
-        
-    
-    def get_quant(self, args: list[str], params: dict[str, str]) -> tuple[bool, object]:
+            return Response(str(e), 400)
+
+    def get_quant(self, args: list[str], params: dict[str, str]) -> Response:
         try:
             if not self.__hid_exists(params['hid']):
-                return False, "Hardware Set With That hid does not exist"
-            
+                return Response('Hardware Set With That hid does not exist', 400)
+
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "RETURN h.quant", uuid=params['hid'])[0]
         except Exception as e:
-            return False, e
+            return Response(str(e), 400)
 
-        return True, match[0].get('h.quant')
-        
+        return Response(str(match[0].get('h.quant')), 200)
