@@ -42,7 +42,7 @@ class DatabaseProvider:
 
         if args[0] not in self._noauth_actions:  # Need to authenticate token
             if auth is None:
-                return Response('Authentication is required for this action', 200)
+                return Response('Authentication is required for this action', 404)
 
             if not self._session_handler.validate_session(auth):
                 return Response('Please log back in!', 404)

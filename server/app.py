@@ -1,6 +1,8 @@
+from base64 import decode
+
 from neo4j import GraphDatabase, exceptions  # Graph DB
 import uuid
-from flask import Flask, request
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import sys
 import signal
@@ -43,6 +45,8 @@ def handler(signal, frame):  # Handler for ensuring database is closed upon exit
     graph_driver.close()
     sys.exit(0)
 
+def pack_message(message):
+    return app.json.dumps({'message': message})
 
 signal.signal(signal.SIGINT, handler)
 
@@ -59,12 +63,19 @@ def user(path):
         api = hardware_api
 
     if api is None:
-        return 'Unknown API type'
+        return pack_message('Unknown API type'), 400
 
-    token = None if request.authorization is None else request.authorization.token
+    token = request.cookies.get('session_id')
+
+    response = None
 
     if request.method == 'GET':
-        return api.process(False, path[1:], params=request.args, auth=token)
+        response = api.process(False, path[1:], params=request.args, auth=token)
     elif request.method == 'POST':
-        return api.process(True, path[1:], data=request.json, auth=token)
-    return 'OK'
+        response = api.process(True, path[1:], data=request.json, auth=token)
+
+    if not response.is_json:  # Jsonify non-json messages
+        response.data = pack_message(response.data.decode())
+        response.content_type = 'application/json'
+
+    return response
