@@ -1,7 +1,7 @@
 import React from "react";
 import "./style.css";
 import "./button.css";
-import { Box } from "./Box.js";
+import { NavBar } from "../navBar/NavBar.js";
 import {Project} from "./Project.js";
 
 
@@ -24,7 +24,7 @@ export const ProjectPageFrame = () => {
           <img className="icon-folder-file" alt="Icon folder file" src="icon_folder file project_.svg" />
         </div>
         <div className="group">
-            <Box />
+            <NavBar />
         </div>
         <div className="project-frame">
           <div className="div-3">

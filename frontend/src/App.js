@@ -6,7 +6,7 @@ import './App.css'
 // import Projects from './projects/Projects.js'
 import ProjectPageFrame from './projectsPage/ProjectPageFrame.js'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
-
+import HW from './hwPage/HW.js';
 
 
 
@@ -42,6 +42,9 @@ function App() {
           </Route>
           <Route exact path="/projects">
             <ProjectPageFrame/>
+          </Route>
+          <Route exact path="/hwSet">
+            <HW />
           </Route>
           
           

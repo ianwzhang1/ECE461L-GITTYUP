@@ -1,11 +1,11 @@
 import React from 'react'
-import "./box.css";
+import "./navBar.css";
 
 
 
-export const Box = () => {
+export const NavBar = () => {
     return(
-        <div className="box">
+        <div className="NavBar">
             <div className="home-box">
                 <img className="icon-home" alt="Icon home" src="icon_home_.svg" />    
             </div>

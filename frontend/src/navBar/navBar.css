@@ -1,4 +1,4 @@
-.box {
+.NavBar {
     height: 46px;
     position: relative;
     width: 370px;
@@ -6,7 +6,7 @@
     top: 0;
 }
 
-.box .group{
+.NavBar .group{
     height: 46 px;
     left: 0;
     position: fixed;
@@ -14,7 +14,7 @@
     width: 370 px;
 }
 
-.box .home-box{
+.NavBar .home-box{
     background-color: #ff990012;
     border: 1px solid;
     border-color: #ff9900;
@@ -25,7 +25,7 @@
     width: 74px;
 }
 
-.box .icon-home{
+.NavBar .icon-home{
     height: 30px;
     left: 21px;
     position: absolute;
@@ -33,7 +33,7 @@
     width: 33px;
 }
 
-.box .file-box{
+.NavBar .file-box{
     background-color: #ff990012;
     border: 1px solid;
     border-color: #ff9900;
@@ -44,7 +44,7 @@
     width: 74px;
 }
 
-.box .icon-library{
+.NavBar .icon-library{
     height: 26px;
     left: 22px;
     position: absolute;
@@ -52,7 +52,7 @@
     width: 33px;
 }
 
-.box .library-box{
+.NavBar .library-box{
     background-color: #ff990012;
     border: 1px solid;
     border-color: #ff9900;
@@ -63,7 +63,7 @@
     width: 74px;
 }
 
-.box .icon-address-book{
+.NavBar .icon-address-book{
     height: 32px;
     left: 17px;
     position: absolute;
@@ -71,7 +71,7 @@
     width: 33px;
 }
 
-.box .settings-box{
+.NavBar .settings-box{
     background-color: #ff990012;
     border: 1px solid;
     border-color: #ff9900;
@@ -82,7 +82,7 @@
     width: 74px;
 }
 
-.box .icon-settings{
+.NavBar .icon-settings{
     height: 29px;
     left: 1px;
     position: absolute;
@@ -90,7 +90,7 @@
     width: 74px;
 }
 
-.box .profile-box{
+.NavBar .profile-box{
     background-color: #ff990012;
     border: 1px solid;
     border-color: #ff9900;
@@ -101,7 +101,7 @@
     width: 74px;
 }
 
-.box .icon-folder-file{
+.NavBar .icon-folder-file{
     height: 30px;
     left: 18px;
     position: absolute;
