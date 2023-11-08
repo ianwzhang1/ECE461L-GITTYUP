@@ -1,0 +1,5 @@
+//Notes on things to do
+//api fetch for sign up page
+//create page for making a new project
+//figure out what pages are needed
+//type more stuff in here if you think of something

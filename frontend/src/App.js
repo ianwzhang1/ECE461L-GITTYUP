@@ -6,6 +6,10 @@ import './App.css'
 import Projects from './projects/Projects.js'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 
+
+
+
+
 const  url = 'http://ec2-18-222-237-211.us-east-2.compute.amazonaws.com:5000/'
   // npm install react-router-dom@5 run this to install router
 
