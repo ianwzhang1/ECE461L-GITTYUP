@@ -26,8 +26,5 @@ jobs:
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
 
-      - name: Enter flaskapp screen
-        run: screen -xS flaskapp
-
-      - name: Start Flask Server
-        run: ./start
+      - name: Deploy Flask Server on Docker
+        run: ./start-flask-app.sh
