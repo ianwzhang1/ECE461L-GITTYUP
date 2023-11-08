@@ -7,9 +7,9 @@ function NewBox() {
     <div className = 'BoxMaster'>
       <Login></Login>
 
-    {/*<div className = 'outermostEllipse'></div>*/}
-    {/*<div className = 'middleEllipse'></div>*/}
-    {/*<div className = 'innermostEllipse'></div>*/}
+    <div className = 'outermostEllipse'></div>
+    <div className = 'middleEllipse'></div>
+    <div className = 'innermostEllipse'></div>
 
 
     </div>
