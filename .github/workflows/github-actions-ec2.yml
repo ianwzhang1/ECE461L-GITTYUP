@@ -27,4 +27,10 @@ jobs:
           TARGET: ${{ secrets.TARGET_DIR }}
 
       - name: Deploy Flask Server on Docker
-        run: ./start-flask-app.sh
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: start-flask-app.sh
