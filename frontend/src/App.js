@@ -3,7 +3,8 @@ import React from 'react';
 import NewBox from './loginPageComponents/NewBox.js';
 import SignUpBox from './signUpPage/SignUpBox.js';
 import './App.css'
-import Projects from './projects/Projects.js'
+// import Projects from './projects/Projects.js'
+import ProjectPageFrame from './projectsPage/ProjectPageFrame.js'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 
 
@@ -40,8 +41,9 @@ function App() {
             </SignUpBox>
           </Route>
           <Route exact path="/projects">
-            <Projects></Projects>
+            <ProjectPageFrame/>
           </Route>
+          
           
         </Switch>
 

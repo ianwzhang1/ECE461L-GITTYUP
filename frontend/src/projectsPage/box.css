@@ -1,0 +1,110 @@
+.box {
+    height: 46px;
+    position: relative;
+    width: 370px;
+    left: 0;
+    top: 0;
+}
+
+.box .group{
+    height: 46 px;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 370 px;
+}
+
+.box .home-box{
+    background-color: #ff990012;
+    border: 1px solid;
+    border-color: #ff9900;
+    height: 46px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 74px;
+}
+
+.box .icon-home{
+    height: 30px;
+    left: 21px;
+    position: absolute;
+    top: 6px;
+    width: 33px;
+}
+
+.box .file-box{
+    background-color: #ff990012;
+    border: 1px solid;
+    border-color: #ff9900;
+    height: 46px;
+    left: 148px;
+    position: absolute;
+    top: 0;
+    width: 74px;
+}
+
+.box .icon-library{
+    height: 26px;
+    left: 22px;
+    position: absolute;
+    top: 10px;
+    width: 33px;
+}
+
+.box .library-box{
+    background-color: #ff990012;
+    border: 1px solid;
+    border-color: #ff9900;
+    height: 46px;
+    left: 222px;
+    position: absolute;
+    top: 0;
+    width: 74px;
+}
+
+.box .icon-address-book{
+    height: 32px;
+    left: 17px;
+    position: absolute;
+    top: 15px;
+    width: 33px;
+}
+
+.box .settings-box{
+    background-color: #ff990012;
+    border: 1px solid;
+    border-color: #ff9900;
+    height: 46px;
+    left: 296px;
+    position: absolute;
+    top: 0;
+    width: 74px;
+}
+
+.box .icon-settings{
+    height: 29px;
+    left: 1px;
+    position: absolute;
+    top: 5px;
+    width: 74px;
+}
+
+.box .profile-box{
+    background-color: #ff990012;
+    border: 1px solid;
+    border-color: #ff9900;
+    height: 46px;
+    left: 74px;
+    position: absolute;
+    top: 0;
+    width: 74px;
+}
+
+.box .icon-folder-file{
+    height: 30px;
+    left: 18px;
+    position: absolute;
+    top: 9px;
+    width: 37px;
+}
