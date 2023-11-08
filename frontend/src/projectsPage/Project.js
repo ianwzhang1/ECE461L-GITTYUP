@@ -15,9 +15,7 @@ export const Project = () => {
             <div className="collaborators">add collaborators</div>
             <HWSet />
             <div className="group">
-                <div className="overlap-group">
-                    <button className="button" onClick={handleClick}>Launch</button>
-                </div>
+                <button className="button" onClick={handleClick}>Launch</button>
             </div>
             <img className="icon-user-friends" alt="Icon user" src="icon_User Friends_.svg" />
         </div>
