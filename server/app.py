@@ -11,7 +11,7 @@ from server.data_providers.user import UserProvider
 from server.session_handler import SessionHandler
 
 app = Flask('GITTYUP')
-app.config.from_pyfile('secrets.properties', silent=False)
+app.config.from_pyfile('./secrets.properties', silent=False)
 
 CORS(app)
 

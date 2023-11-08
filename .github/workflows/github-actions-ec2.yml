@@ -15,6 +15,9 @@ jobs:
       - name: Checkout the files
         uses: actions/checkout@v2
 
+      - name: Setup Python
+        uses: actions/setup-python@v1
+
       - name: Deploy to Server 1
         uses: easingthemes/ssh-deploy@main
         env:
@@ -22,3 +25,9 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
+
+      - name: Enter flaskapp screen
+        run: screen -xS flaskapp
+
+      - name: Start Flask Server
+        run: ./start
