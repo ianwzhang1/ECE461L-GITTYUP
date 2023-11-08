@@ -6,12 +6,6 @@ import {Link} from "react-router-dom"
 //import Box from './Box';
 // import './box.css';
 
-
-
-
-
-
-
 class Login extends React.Component {
 
   onLogin(){

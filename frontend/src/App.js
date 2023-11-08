@@ -1,10 +1,9 @@
 import React from 'react';
 // import Box from './Box.jsx';
- import Login from './LoginPageComponents/Login.jsx';
-import NewBox from './LoginPageComponents/NewBox.jsx';
-import SignUpBox from './SignUpPage/SignUpBox.jsx';
+import NewBox from './loginPageComponents/NewBox.js';
+import SignUpBox from './signUpPage/SignUpBox.js';
 import './App.css'
-import Projects from './Projects/Projects.jsx'
+import Projects from './projects/Projects.js'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 
 const  url = 'http://ec2-18-222-237-211.us-east-2.compute.amazonaws.com:5000/'

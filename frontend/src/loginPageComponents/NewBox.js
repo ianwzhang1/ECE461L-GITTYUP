@@ -1,6 +1,6 @@
 import React from 'react';
 import './NewBox.css';
-import Login from './Login';
+import Login from './Login.js';
 
 function NewBox() {
   return (
