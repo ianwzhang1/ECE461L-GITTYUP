@@ -30,13 +30,12 @@ function App() {
           <Route exact path="/">
             <NewBox>
             </NewBox>
-
           </Route>
-          <Route exact path="/SignUp">
+          <Route exact path="/signup">
             <SignUpBox>
             </SignUpBox>
           </Route>
-          <Route exact path="/Projects">
+          <Route exact path="/projects">
             <Projects></Projects>
           </Route>
           

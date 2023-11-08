@@ -1,6 +1,7 @@
 from neo4j import GraphDatabase, exceptions  # Graph DB
 import uuid
 from flask import Flask, request
+from flask_cors import CORS
 import sys
 import signal
 
@@ -11,6 +12,8 @@ from server.session_handler import SessionHandler
 
 app = Flask('GITTYUP')
 app.config.from_pyfile('secrets.properties', silent=False)
+
+CORS(app)
 
 # Initialize graph driver
 try:
@@ -58,8 +61,10 @@ def user(path):
     if api is None:
         return 'Unknown API type'
 
+    token = None if request.authorization is None else request.authorization.token
+
     if request.method == 'GET':
-        return api.process(False, path[1:], params=request.args, auth=request.authorization.token)
+        return api.process(False, path[1:], params=request.args, auth=token)
     elif request.method == 'POST':
-        return api.process(True, path[1:], data=request.json, auth=request.authorization.token)
+        return api.process(True, path[1:], data=request.json, auth=token)
     return 'OK'

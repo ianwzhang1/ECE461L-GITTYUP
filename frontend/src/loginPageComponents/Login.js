@@ -18,7 +18,7 @@ class Login extends React.Component {
           <div  className="form">
             <header>Welcome to GittyUp</header>
             <br />
-            <form  onSubmit= {() =>onLogin()} className="form-example">
+            <form onSubmit={e => e.preventDefault()} className="form-example">
               <div className="username">
                 <div className="overlap-group-2">
                   <div className="text-wrapper">USERNAME</div>
@@ -34,7 +34,7 @@ class Login extends React.Component {
                 </div>
                 <input type="password" name="Password" id="Password" placeholder="Password" required />
               </div>
-              <button className="login-btn" onClick={() => onLogin()}>
+              <button className="login-btn" onClick={() => this.onLogin()}>
                 <div className="login-wrapper">
                   <div className="login">LOGIN</div>
                 </div>
@@ -44,13 +44,9 @@ class Login extends React.Component {
               </div>
             </form>
           </div>
-  
-       
       </div>
     );
   }
-
-  
 }
 
 export default Login;

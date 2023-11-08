@@ -5,10 +5,11 @@ from server.utils import data_missing
 from flask import Response
 import bcrypt
 
+
 class UserProvider(DatabaseProvider):
     def uid_exists(self, uid) -> bool:
         match = self._driver.execute_query("MATCH (u:User {uuid: $uuid})"
-                                               "RETURN u", uuid=str(uid))[0]  # 0 index unwraps EagerResult
+                                           "RETURN u", uuid=str(uid))[0]  # 0 index unwraps EagerResult
         return len(match) > 0
 
     # POST request for adding user
@@ -28,7 +29,8 @@ class UserProvider(DatabaseProvider):
             self._driver.execute_query("CREATE (u:User)"
                                        "SET u = {username: $usr, password: $pwd, salt: $salt, dispname: $name, "
                                        "uuid: $uuid}",
-                                       usr=data['usr'], pwd=hashed.decode('utf-8'), salt=salt.decode('utf-8'), name=data['name'], uuid=str(uuid))
+                                       usr=data['usr'], pwd=hashed.decode('utf-8'), salt=salt.decode('utf-8'),
+                                       name=data['name'], uuid=str(uuid))
         except Exception as e:
             return Response(str(e), 400)
 
@@ -94,3 +96,6 @@ class UserProvider(DatabaseProvider):
             return Response(str(e), 400)
 
         return Response('Done', 200)
+
+    def get_test_noauth(self, args: list[str], params: dict[str, str]) -> Response:
+        return Response('Hey buddy!', 200)
