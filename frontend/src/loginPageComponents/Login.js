@@ -5,11 +5,39 @@ import {Link} from "react-router-dom"
 
 //import Box from './Box';
 // import './box.css';
+//import {postData} from "../App.js"
+
+//const  url = 'http://ec2-18-222-237-211.us-east-2.compute.amazonaws.com:5000/'
+const url = 'http://127.0.0.1:5000/'
+  // npm install react-router-dom@5 run this to install router
+
+  async function postData(path, data) {
+    const response = await fetch(url + path, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "plain/text"
+        },
+        body: JSON.stringify(data)
+    });
+    return response.text()//.json();
+  }
+
 
 class Login extends React.Component {
 
   onLogin(){
     console.log("notPoop");
+    postData("user/login",
+      {
+      "usr": "iwzhang",
+      "pwd": "123456"
+      }).then((data) => {
+        console.log(data)
+      })
+
+      //find out how to get data from forms
+      
   }
 
   render(){
@@ -32,7 +60,7 @@ class Login extends React.Component {
                   <div className="password-2">PASSWORD</div>
                   {/* <img className="lock" alt="Lock" src="lock.svg" /> */}
                 </div>
-                <input type="password" name="Password" id="Password" placeholder="Password" required />
+                <input type="password" name="Password" id="Password" placeholder="Password"  required />
               </div>
               <button className="login-btn" onClick={() => this.onLogin()}>
                 <div className="login-wrapper">
