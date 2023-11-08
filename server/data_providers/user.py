@@ -78,7 +78,7 @@ class UserProvider(DatabaseProvider):
 
             if match[0].get('u.password') == hashed.decode('utf-8'):
                 res = flask.make_response()
-                res.data = 'Logged In'
+                res.data = match[0].get('u.uuid')
                 res.set_cookie('session_id', self._session_handler.new_session(match[0].get('u.uuid')))
                 res.status = 200
                 return res
