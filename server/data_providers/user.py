@@ -2,7 +2,7 @@ import flask
 
 from server.data_providers.database import DatabaseProvider
 from server.utils import data_missing
-from flask import Response
+from flask import Response, jsonify
 import bcrypt
 
 
@@ -77,11 +77,7 @@ class UserProvider(DatabaseProvider):
             hashed = bcrypt.hashpw(data['pwd'].encode('utf-8'), salt)
 
             if match[0].get('u.password') == hashed.decode('utf-8'):
-                res = flask.make_response()
-                res.data = match[0].get('u.uuid')
-                res.set_cookie('session_id', self._session_handler.new_session(match[0].get('u.uuid')), samesite='None', secure= True)
-                res.status = 200
-                return res
+                return jsonify({'uuid': match[0].get('u.uuid'), 'session_id': self._session_handler.new_session(match[0].get('u.uuid'))})
             else:
                 return Response('Incorrect password', 400)
         except Exception as e:

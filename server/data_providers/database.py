@@ -35,12 +35,13 @@ class DatabaseProvider:
             self._post_actions[name] = func[1]
 
     # Returns Success/Fail status and message which will get stringified later
-    def process(self, is_post: bool, args: list[str], data=None, params: dict[str, str] = None, auth: str = None) -> Response:
+    def process(self, is_post: bool, args: list[str], data=None, params: dict[str, str] = None) -> Response:
 
         if len(args) == 0:
             return Response('No path specified', 400)
 
         if args[0] not in self._noauth_actions:  # Need to authenticate token
+            auth = params['session_id'] if 'session_id' in params else None
             if auth is None:
                 return Response('Authentication is required for this action', 404)
 
