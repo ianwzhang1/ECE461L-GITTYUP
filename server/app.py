@@ -15,7 +15,7 @@ from server.session_handler import SessionHandler
 app = Flask('GITTYUP')
 app.config.from_pyfile('secrets.properties', silent=False)
 
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # Initialize graph driver
 try:

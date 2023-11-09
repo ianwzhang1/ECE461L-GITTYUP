@@ -7,9 +7,16 @@
 
 button {
     background-color: #ff9900;
+    font-family: "Krona One-Regular", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
     color: #fee4be;
     border: none;
     cursor: pointer;
+    align-self: center;
+    height: 39px;
+    border-radius: 15px;
+    width: 180px;
 }
 
 button:hover {

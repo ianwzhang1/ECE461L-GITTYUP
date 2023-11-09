@@ -1,0 +1,51 @@
+.hwset {
+    background-color: #f1cb92;
+    border: 2px solid #fbf9f7;
+    border-radius: 15px;
+
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+}
+
+.hwset-icon {
+    margin: 10px;
+    position: absolute;
+    width: 25px;
+
+    align-self: flex-start;
+}
+
+.hwset-title {
+    margin: 10px;
+    text-align: center;
+    align-self: center;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    border: 1px solid #ffb267;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ffb267;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #e7a15d;
+}
+
+.hwlist-container {
+    border: 2px solid #ffb267;
+    border-radius: 15px;
+    margin: 5px;
+    max-height: 200px;
+    overflow: auto;
+}

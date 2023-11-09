@@ -1,20 +1,19 @@
-import React from 'react';
-// import Box from './Box.jsx';
+import React, {Fragment} from 'react';
+
 import NewBox from './loginPageComponents/NewBox.js';
 import SignUpBox from './signUpPage/SignUpBox.js';
 import './App.css'
-// import Projects from './projects/Projects.js'
-import ProjectPageFrame from './projectsPage/ProjectPageFrame.js'
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
+import ProjectOverview from './project-overview/ProjectOverview.js'
+import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom'
+import HW from './hwPage/HW.js';
+import login from "./loginPageComponents/Login";
 
+const url = "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
 
+const loginOverride = true;
+export let userID = null;
 
-
-
-const  url = 'http://ec2-18-222-237-211.us-east-2.compute.amazonaws.com:5000/'
-  // npm install react-router-dom@5 run this to install router
-
-  async function postData(path, data) {
+export async function postData(path, data) {
     const response = await fetch(url + path, {
         method: "POST",
         headers: {
@@ -24,35 +23,33 @@ const  url = 'http://ec2-18-222-237-211.us-east-2.compute.amazonaws.com:5000/'
         body: JSON.stringify(data)
     });
     return response.json();
-  }
+}
+
+export async function getData(path) {
+    const response = await fetch(url + path, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
+    });
+    return response.json();
+}
 
 
 function App() {
-  return (
-    <Router>
-      <div className = 'AppDiv'>
-        <Switch>
-          <Route exact path="/">
-            <NewBox>
-            </NewBox>
-          </Route>
-          <Route exact path="/signup">
-            <SignUpBox>
-            </SignUpBox>
-          </Route>
-          <Route exact path="/projects">
-            <ProjectPageFrame/>
-          </Route>
-          
-          
-        </Switch>
 
+    return (
+        <Router>
+            <Routes>
+                <Route exact path="/" element={<NewBox/>}/>
+                <Route exact path="/signup" element={userID !== null || loginOverride ? <SignUpBox/> : <Navigate replace to={"/"}/>}/>
+                <Route exact path="/projects" element={userID !== null || loginOverride ? <ProjectOverview/> : <Navigate replace to={"/"}/>}/>
+                <Route exact path="/hwSet" element={userID !== null || loginOverride ? <HW/> : <Navigate replace to={"/"}/>}/>
+            </Routes>
+        </Router>
 
-      </div>
-    </Router>
-
-  );
+    );
 }
 
 export default App;
-
