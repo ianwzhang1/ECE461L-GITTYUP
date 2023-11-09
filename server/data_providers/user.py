@@ -36,7 +36,7 @@ class UserProvider(DatabaseProvider):
 
         res = flask.make_response()
         res.data = str(uuid)
-        res.set_cookie('session_id', self._session_handler.new_session(str(uuid)), samesite='None')
+        res.set_cookie('session_id', self._session_handler.new_session(str(uuid)), samesite='None', secure= True)
         res.status = 200
         return res
 
@@ -79,7 +79,7 @@ class UserProvider(DatabaseProvider):
             if match[0].get('u.password') == hashed.decode('utf-8'):
                 res = flask.make_response()
                 res.data = match[0].get('u.uuid')
-                res.set_cookie('session_id', self._session_handler.new_session(match[0].get('u.uuid')))
+                res.set_cookie('session_id', self._session_handler.new_session(match[0].get('u.uuid')), samesite='None', secure= True)
                 res.status = 200
                 return res
             else:
