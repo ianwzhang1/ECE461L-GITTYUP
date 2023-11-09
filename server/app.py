@@ -65,14 +65,12 @@ def user(path):
     if api is None:
         return pack_message('Unknown API type'), 400
 
-    token = request.cookies.get('session_id')
-
     response = None
 
     if request.method == 'GET':
-        response = api.process(False, path[1:], params=request.args, auth=token)
+        response = api.process(False, path[1:], params=request.args)
     elif request.method == 'POST':
-        response = api.process(True, path[1:], data=request.json, auth=token)
+        response = api.process(True, path[1:], data=request.json)
 
     if not response.is_json:  # Jsonify non-json messages
         response.data = pack_message(response.data.decode())
