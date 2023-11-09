@@ -1,32 +1,13 @@
-
 .dashboard-login {
-  background-color: #ffbd6f;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 100%;
-  overflow: hidden;
+  flex-direction: column;
 }
 
-.dashboard-login .form {
-  height: 40%;
-  left: 40%;
-  top: 40%;
-  width: 302px;
-}
-
-.dashboard-login .username,
-.dashboard-login .password {
-  position: relative;
-}
-
-.dashboard-login .username input,
-.dashboard-login .password input {
+.credentials-input {
   background-color: transparent;
   border: none;
   border-bottom: 1px solid #000;
   color: #000;
-  font-family: "Montserrat-Light", Helvetica;
   font-size: 14px;
   font-weight: 300;
   width: 100%;
@@ -35,12 +16,9 @@
   outline: none;
 }
 
-.dashboard-login .username .overlap-group-2,
-.dashboard-login .password .overlap-group-2 {
-  border: none;
-  background-color: transparent;
-  display: flex;
-  align-items: center;
+.credentials-label {
+  text-align: left;
+  justify-self: left;
 }
 
 .dashboard-login .user,
@@ -72,7 +50,6 @@
 
 .dashboard-login .login {
   color: #de9540;
-  font-family: "Montserrat-SemiBold", Helvetica;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0;
@@ -92,7 +69,6 @@
 .dashboard-login .sign-up-link a {
   color: #007BFF;
   text-decoration: none;
-  font-family: "Montserrat-Medium", Helvetica;
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 0;

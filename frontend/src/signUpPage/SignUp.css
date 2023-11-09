@@ -1,12 +1,4 @@
 
-.dashboard-login {
-  background-color: #ffbd6f;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 100%;
-  overflow: hidden;
-}
 
 .dashboard-login .form {
   height: 40%;
