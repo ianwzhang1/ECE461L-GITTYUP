@@ -29,7 +29,7 @@ export const ProjectOverview = () => {
             </div>
 
             <div className="project-frame">
-                <div className="tiled">
+                <div className="horizontal-tiled">
                     <ProjectPreview/>
                     <ProjectPreview/>
                     <ProjectPreview/>
