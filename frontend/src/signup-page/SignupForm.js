@@ -1,6 +1,5 @@
 import React from 'react';
-import './SignUpBox.css';
-import SignUp from './SignUp';
+import '../login-page/LoginForm.css';
 import IconButton from "../components/IconButton";
 import {useNavigate} from "react-router-dom";
 
@@ -10,7 +9,7 @@ function SignupForm() {
     let onSignup = () => {
         console.log("Signing up...");
         // Add a password requirement
-        navigate('/projects');
+        navigate('/data');
     }
 
     return (

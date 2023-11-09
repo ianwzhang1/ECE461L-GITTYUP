@@ -1,6 +1,7 @@
 #root {
     flex: 1;
     text-align: center;
+    background-color: #fee4be;
 }
 
 .app { /* Core App Theme */
@@ -8,10 +9,11 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background-color: #fee4be;
+    /*background-color: #fee4be;*/
     min-height: 100vh;
     width: 100%;
     font-family: "Krona One-Regular", Helvetica, serif;
+    z-index: 2;
 }
 
 .frame {
@@ -271,6 +273,7 @@
     overflow: visible;
     transform: scale(2);
     transform-origin: bottom left;
+    z-index: 1;
 
     fill: rgba(255, 161, 51, 0.30);
     stroke-width: 3px;
@@ -284,6 +287,7 @@
     overflow: visible;
     transform: scale(2);
     transform-origin: top right;
+    z-index: 1;
 
     fill: rgba(255, 153, 0, 0.57);
     stroke-width: 3px;

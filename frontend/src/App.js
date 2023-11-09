@@ -1,14 +1,15 @@
 import React, {Fragment} from 'react';
 
-import Login from './loginPageComponents/Login.js';
-import SignupForm from './signUpPage/SignupForm.js';
+import Login from './login-page/Login.js';
+import SignupForm from './signup-page/SignupForm.js';
 import './App.css'
 import ProjectOverview from './project-overview/ProjectOverview.js'
 import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom'
 import HW from './hwPage/HW.js';
-import login from "./loginPageComponents/LoginForm";
+import login from "./login-page/LoginForm";
 import BackgroundCurves from "./components/BackgroundCurves";
-import SignUp from "./signUpPage/SignUp";
+import Signup from "./signup-page/Signup";
+import Project from "./data/Project";
 
 const url = "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
 
@@ -41,13 +42,17 @@ export async function getData(path) {
 
 function App() {
 
+    let getElement = (elem) => {
+        return userID !== null || loginOverride ? [<BackgroundCurves/>, elem] : <Navigate replace to={"/"}/>;
+    }
+
     return (
         <Router>
             <Routes>
-                <Route exact path="/" element={[<Login/>, <BackgroundCurves/>]}/>
-                <Route exact path="/signup" element={userID !== null || loginOverride ? [<SignUp/>, <BackgroundCurves/>] : <Navigate replace to={"/"}/>}/>
-                <Route exact path="/projects" element={userID !== null || loginOverride ? [<ProjectOverview/>, <BackgroundCurves/>] : <Navigate replace to={"/"}/>}/>
-                <Route exact path="/hwSet" element={userID !== null || loginOverride ? [<HW/>, <BackgroundCurves/>] : <Navigate replace to={"/"}/>}/>
+                <Route exact path="/" element={getElement(<Login/>)}/>
+                <Route exact path="/signup" element={getElement(<Signup/>)}/>
+                <Route exact path="/projects" element={getElement(<ProjectOverview/>)}/>
+                <Route exact path="/hwSet" element={getElement(<HW/>)}/>
             </Routes>
         </Router>
 

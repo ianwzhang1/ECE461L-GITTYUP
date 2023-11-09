@@ -2,24 +2,30 @@ import React from 'react'
 
 import "./project.css";
 import "./button.css";
-import {HWList} from "./HWList.js";
 import IconButton from "../components/IconButton";
+import HWList from "./HWList";
+import {useNavigate} from "react-router-dom";
+import project from "../data/Project";
 
-class ProjectPreview extends React.Component {
+function ProjectPreview(props) {
 
-    constructor(props) {
-        super(props);
+    let navigate = useNavigate();
+
+    let manageProject = (projectID) => {
+        if (projectID === undefined) {
+            alert("Project is missing ID");
+            return;
+        }
+        navigate("/project/" + projectID);
     }
 
-    render() {
-        return (
-            <div className="project">
-                <h1>Project Name</h1>
-                <HWList/>
-                <IconButton icon="fa fa-wrench" text="Manage"/>
-            </div>
-        )
-    }
+    return (
+        <div className="project">
+            <h1>{props.project.name}</h1>
+            <HWList hw={props.project.hw}/>
+            <IconButton onClick={() => manageProject(props.project.id)} icon="fa fa-wrench" text="Manage"/>
+        </div>
+    )
 }
 
 export default ProjectPreview;
