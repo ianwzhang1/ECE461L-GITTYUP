@@ -36,7 +36,7 @@ class UserProvider(DatabaseProvider):
 
         res = flask.make_response()
         res.data = str(uuid)
-        res.set_cookie('session_id', self._session_handler.new_session(str(uuid)))
+        res.set_cookie('session_id', self._session_handler.new_session(str(uuid)), samesite='None')
         res.status = 200
         return res
 
