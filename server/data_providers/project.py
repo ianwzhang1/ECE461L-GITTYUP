@@ -30,7 +30,7 @@ class ProjectProvider(DatabaseProvider):
 
         try:
             if self.__pid_exists(project_uuid):
-                return Response('Project with same name already exists', 400)
+                return Response('ProjectPreview with same name already exists', 400)
 
             if not self.__uid_exists(data['uid']):
                 return Response('The specified admin listed does not exist', 400)
@@ -55,7 +55,7 @@ class ProjectProvider(DatabaseProvider):
 
         try:
             if not self.__pid_exists(data['pid']):
-                return Response('Project named by PID does not exist', 400)
+                return Response('ProjectPreview named by PID does not exist', 400)
 
             match = self._driver.execute_query("MATCH (p:Proj{uuid: $uuid}) "
                                                " SET p.desc = $desc", desc= data['desc'], uuid=data['pid'])
@@ -68,7 +68,7 @@ class ProjectProvider(DatabaseProvider):
     def get_desc(self, args: list[str], params: dict[str, str]) -> Response:
         try:
             if not self.__pid_exists(params['pid']):
-                return Response('Project With That pid does not exist', 400)
+                return Response('ProjectPreview With That pid does not exist', 400)
 
             match = self._driver.execute_query("MATCH (p:Proj {uuid: $uuid})"
                                                " RETURN p.desc", uuid=params['pid'])[0]
@@ -83,7 +83,7 @@ class ProjectProvider(DatabaseProvider):
     def get_user_all(self, args: list[str], params: dict[str, str]) -> Response:
         pid = params['pid']
         if not self.__pid_exists(pid):
-            return Response('Project with that pid does not exist', 400)
+            return Response('ProjectPreview with that pid does not exist', 400)
         
         match = self._driver.execute_query("MATCH (u:User) -[:MEMBER_OF]-> (p:Proj {uuid: $pid})"
                                            " RETURN u.uuid",
@@ -279,7 +279,7 @@ class ProjectProvider(DatabaseProvider):
                 return Response('HSet with that hid does not exist', 400)
             
             if not self.__pid_exists(params['pid']):
-                return Response('Project with that pid does not exist', 400)
+                return Response('ProjectPreview with that pid does not exist', 400)
 
             match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) -[b:BORROWED]-> (h:Hset {uuid: $hid})"
                                                " RETURN b.quant", 
