@@ -14,12 +14,12 @@ function Login() {
             <div className="header">
                 <PageTitle icon="fa fa-key" text="Login"/>
             </div>
-            <div className='dashboard-login vertical-tiled'>
+            <div className="dashboard-login vertical-tiled shadow-box">
                 <h1>Welcome to GittyUp</h1>
                 <LoginForm/>
+                <IconButton onClick={() => navigate('/signup')} text="Signup"/>
             </div>
             <br/>
-            <IconButton onClick={() => navigate('/signup')} text="Signup"/>
         </div>
     );
 }

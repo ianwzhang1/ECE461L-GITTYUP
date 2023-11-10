@@ -19,7 +19,7 @@ function ProjectPreview(props) {
     }
 
     return (
-        <div className="project">
+        <div className="project shadow-box">
             <h1>{props.project.name}</h1>
             <HWList hw={props.project.hw}/>
             <IconButton onClick={() => manageProject(props.project.id)} icon="fa fa-wrench" text="Manage"/>

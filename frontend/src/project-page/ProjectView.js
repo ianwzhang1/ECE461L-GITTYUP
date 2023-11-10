@@ -6,6 +6,7 @@ import SignupForm from "../signup-page/SignupForm";
 import IconButton from "../components/IconButton";
 import Project from "../data/Project";
 import HW from "../data/HW";
+import {user} from "../App.js"
 
 function ProjectView(props) {
     let navigate = useNavigate(); // For redirections
@@ -15,6 +16,15 @@ function ProjectView(props) {
     console.log(params['pid'])
     // TODO: Perform a request to get detailed project data
     let project = new Project('5187445e-916e-5b70-a56c-297f75f8814b', 'Project1', [new HW('Hammer', 10), new HW('Axe', 10), new HW('Jackhammer', 10), new HW('Knife', 10)]);
+
+    let isAdmin = () => {
+        return user.admin_projects.includes(project.id);
+    }
+
+    let addCollaborator = () => {
+        let collaborator = document.getElementById("collaborator-input");
+        console.log(collaborator.value); // This gets the input
+    }
 
     return (
         <div className="app">
@@ -53,6 +63,11 @@ function ProjectView(props) {
             </div>
             <br/>
             <IconButton onClick={() => navigate('/projects')} text="Back to Projects"/>
+            {isAdmin() ? <div>
+                <br/>
+                <h1>Admin Controls</h1>
+                <input id="collaborator-input" className="name-input"></input><IconButton onClick={() => addCollaborator()} icon="fa fa-plus" text="Add Collaborator"/>
+            </div> : null}
         </div>
     );
 }

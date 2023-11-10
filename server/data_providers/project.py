@@ -44,11 +44,12 @@ class ProjectProvider(DatabaseProvider):
                                        name=data['name'], proj_uuid=str(project_uuid),
                                        user_uuid=data['uid'],
                                        admin=True)
+            data = project_uuid
+            return jsonify(data)
         except Exception as e:
             return Response(str(e), 400)
 
-        data = project_uuid
-        return jsonify(data)
+        
 
     def post_desc(self, args: list[str], data) -> Response:
         if data_missing(('pid', 'desc'), data):
@@ -73,11 +74,12 @@ class ProjectProvider(DatabaseProvider):
 
             match = self._driver.execute_query("MATCH (p:Proj {uuid: $uuid})"
                                                " RETURN p.desc", uuid=params['pid'])[0]
+            data = str(match[0].get('p.desc'))
+            return jsonify(data)
         except Exception as e:
             return Response(str(e), 400)
         
-        data = str(match[0].get('p.desc'))
-        return jsonify(data)
+        
 
 
     # The following is part of user

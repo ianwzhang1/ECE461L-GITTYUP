@@ -16,12 +16,12 @@ function Signup() {
             <div className="header">
                 <PageTitle icon="fa fa-clipboard" text="Signup"/>
             </div>
-            <div className='dashboard-login vertical-tiled'>
+            <div className='dashboard-login vertical-tiled shadow-box'>
                 <h1>Welcome to GittyUp</h1>
                 <SignupForm/>
+                <IconButton onClick={() => navigate('/')} text="Back to Login"/>
             </div>
             <br/>
-            <IconButton onClick={() => navigate('/')} text="Back to Login"/>
         </div>
     );
 }
