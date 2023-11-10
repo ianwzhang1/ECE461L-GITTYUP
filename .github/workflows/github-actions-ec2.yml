@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy GITTUP Flask Server
+    name: Deploy GITTYUP Flask Server
     runs-on: ubuntu-latest
 
     steps:
@@ -33,4 +33,4 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.PORT }}
-          script: ./start-flask-app.sh
+          script: ./start-flask-app.sh && ./start-react-app.sh

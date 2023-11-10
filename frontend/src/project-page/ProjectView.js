@@ -1,25 +1,30 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import './ProjectView.css';
-import {useNavigate, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import PageTitle from "../components/PageTitle";
 import SignupForm from "../signup-page/SignupForm";
 import IconButton from "../components/IconButton";
 import Project from "../data/Project";
 import HW from "../data/HW";
-import {user} from "../App.js"
+import {current_user} from "../backendLinker/BackendLink";
+import {UserContext} from "../App";
 
 function ProjectView(props) {
     let navigate = useNavigate(); // For redirections
     let params = useParams();
+    let location = useLocation();
+    const { currentUser, setCurrentUser } = useContext(UserContext);
+
+    useEffect(() => {
+        if (currentUser === null) {
+            navigate("/");
+        }
+    }, [location]);
 
     // The project path is located at params['pid']. Use this to get more detailed info about the project.
     console.log(params['pid'])
     // TODO: Perform a request to get detailed project data
     let project = new Project('5187445e-916e-5b70-a56c-297f75f8814b', 'Project1', [new HW('Hammer', 10), new HW('Axe', 10), new HW('Jackhammer', 10), new HW('Knife', 10)]);
-
-    let isAdmin = () => {
-        return user.admin_projects.includes(project.id);
-    }
 
     let addCollaborator = () => {
         let collaborator = document.getElementById("collaborator-input");
@@ -63,7 +68,7 @@ function ProjectView(props) {
             </div>
             <br/>
             <IconButton onClick={() => navigate('/projects')} text="Back to Projects"/>
-            {isAdmin() ? <div>
+            {false ? <div>
                 <br/>
                 <h1>Admin Controls</h1>
                 <input id="collaborator-input" className="name-input"></input><IconButton onClick={() => addCollaborator()} icon="fa fa-plus" text="Add Collaborator"/>

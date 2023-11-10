@@ -48,6 +48,13 @@
     position: fixed;
 }
 
+button .logout {
+    top: 0;
+    right: 0 !important;
+    position: absolute !important;
+    background-color: red !important;
+}
+
 .header {
     top: 0;
     position: absolute;
