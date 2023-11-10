@@ -1,12 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import '../login-page/LoginForm.css';
 import IconButton from "../components/IconButton";
 import {useNavigate} from "react-router-dom";
-import {setUser, user} from "../App";
+import {setUser, user, UserContext} from "../App";
 import User from "../data/User";
+import {post} from "../backendLinker/BackendLink";
 
 function SignupForm() {
     let navigate = useNavigate();
+    const { currentUser, setCurrentUser } = useContext(UserContext);
 
     let onSignup = () => {
         console.log("Signing up...");
@@ -15,6 +17,15 @@ function SignupForm() {
         let username = document.getElementById("username").value;
         let password = document.getElementById("password").value;
 
+
+        post("user/add", currentUser, {"name": name, "usr": username, "pwd": password}).then(async (response) => {
+            let json = await response.json();
+            if (response.status !== 200) {
+                alert(json.message);
+            } else {
+                navigate("/")
+            }
+        })
     }
 
     return (

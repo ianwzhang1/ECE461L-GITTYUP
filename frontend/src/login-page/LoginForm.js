@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import './Login.css';
 import {Link, Navigate, useNavigate} from "react-router-dom"
 import IconButton from "../components/IconButton";
-import BackendLink, {get, post, setCurrentUser} from "../backendLinker/BackendLink";
+import BackendLink, {get, post, request, setCurrentUser} from "../backendLinker/BackendLink";
 import {setUser, user, global, setGlobal, UserContext} from "../App";
 import User from "../data/User";
 
@@ -20,9 +20,9 @@ function LoginForm() {
         let username = document.getElementById("username").value;
         let password = document.getElementById("password").value;
 
-        post("user/login", {"usr": username, "pwd": password}).then(async (response) => {
+        post("user/login", currentUser, {"usr": username, "pwd": password}).then(async (response) => {
             let json = await response.json();
-            if (response.status === 400) {
+            if (response.status !== 200) {
                 alert(json.message);
             } else {
                 let sessionId = json.session_id;
