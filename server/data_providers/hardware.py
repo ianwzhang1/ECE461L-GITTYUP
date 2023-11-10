@@ -23,9 +23,7 @@ class HardwareProvider(DatabaseProvider):
                                        name=data["name"],
                                        uuid=str(uuid))
             
-            return jsonify({
-                'message':str(uuid)
-            })
+            return jsonify(str(uuid))
 
         except Exception as e:
             return Response(str(e), 400)
