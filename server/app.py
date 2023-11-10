@@ -70,7 +70,7 @@ def user(path):
     if request.method == 'GET':
         response = api.process(False, path[1:], params=request.args)
     elif request.method == 'POST':
-        response = api.process(True, path[1:], data=request.json)
+        response = api.process(True, path[1:], params=request.args, data=request.json)
 
     if not response.is_json:  # Jsonify non-json messages
         response.data = pack_message(response.data.decode())
