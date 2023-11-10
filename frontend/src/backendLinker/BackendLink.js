@@ -3,7 +3,19 @@ function alert(message) {
   console.error(message);
 }
 
+function strip_quotations(string) {
+  if (string.length === 0) {
+    return string;
+  }
+  if (string[0] === '"' && string[string.length - 1] === '"') {
+    return string.slice(1, -1);
+  } else {
+    return string;
+  }
+}
+
 central_uri = "http://127.0.0.1:5000/";
+// central_uri = "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/";
 
 function addQueryParams(query, dictionary) {
   let internal_query = query;
@@ -133,6 +145,34 @@ class BackendLink {
       });
   }
 
+  all_hset_ids(callbackFx) {
+    const extension = "hset/allids";
+    const full_url = addQueryParams(this.apiURL + extension, {
+      session_id: this.session_id,
+    });
+
+    fetch(full_url, {
+      credentials: "same-origin",
+      method: "get",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((errorMessage) => {
+            throw new Error(errorMessage);
+          });
+        } else {
+          return response.json();
+        }
+      })
+      .then((json) => {
+        callbackFx(json);
+      })
+      .catch((error) => {
+        alert(error.message);
+        callbackFx(null);
+      });
+  }
+
   hset_create(callbackFx, hset_name) {
     const extension = "hset/add";
     const full_url = addQueryParams(this.apiURL + extension, {
@@ -161,7 +201,7 @@ class BackendLink {
         return response.text();
       })
       .then((text) => {
-        callbackFx(text);
+        callbackFx(strip_quotations(text));
       })
       .catch((error) => {
         alert(error.message);
@@ -169,14 +209,14 @@ class BackendLink {
       });
   }
 
-  all_hset_ids(callbackFx) {
-    const extension = "hset/allids";
+  hset_get_desc(callbackFx, hid) {
+    const extension = "hset/desc";
     const full_url = addQueryParams(this.apiURL + extension, {
       session_id: this.session_id,
+      hid: hid,
     });
 
     fetch(full_url, {
-      credentials: "same-origin",
       method: "get",
     })
       .then((response) => {
@@ -189,7 +229,44 @@ class BackendLink {
         }
       })
       .then((json) => {
-        callbackFx(json);
+        callbackFx(strip_quotations(json));
+      })
+      .catch((error) => {
+        alert(error.message);
+        callbackFx(null);
+      });
+  }
+
+  hset_set_desc(callbackFx, hid, desc) {
+    const extension = "hset/desc";
+    const full_url = addQueryParams(this.apiURL + extension, {
+      session_id: this.session_id,
+    });
+    console.log(full_url);
+
+    const requestBody = {
+      hid: hid,
+      desc: desc,
+    };
+
+    fetch(full_url, {
+      method: "post",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.status === 400) {
+          throw new Error("Hardware Set does not exist");
+        } else if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return response.text();
+      })
+      .then((text) => {
+        callbackFx(strip_quotations(text));
       })
       .catch((error) => {
         alert(error.message);
@@ -199,7 +276,9 @@ class BackendLink {
 }
 
 function testsignup() {
-  const backend = new BackendLink(central_uri);
+  const backend = new BackendLink(
+    "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
+  );
   backend.add_user(
     (result) => {
       console.log(result);
@@ -211,7 +290,9 @@ function testsignup() {
   );
 }
 function testGetHSets() {
-  const backend = new BackendLink(central_uri);
+  const backend = new BackendLink(
+    "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
+  );
   backend.user_add(
     (result) => {
       console.log(result);
@@ -233,7 +314,7 @@ function testHsetCreate() {
       console.log(result);
       backend.hset_create((result) => {
         console.log(result);
-      }, "ipads");
+      }, "abcdef");
     },
     // myCallback,
     "johnny",
@@ -242,6 +323,37 @@ function testHsetCreate() {
   );
 }
 
-testHsetCreate();
+function testHsetGetSetDesc() {
+  const backend = new BackendLink(
+    "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
+  );
+  backend.user_add(
+    (result) => {
+      backend.all_hset_ids((hset_ids) => {
+        hset_ids.forEach((hset) => {
+          backend.hset_set_desc(
+            (result) => {
+              console.log(result);
+            },
+            hset,
+            "ppap"
+          );
+        });
+
+        hset_ids.forEach((hset) => {
+          backend.hset_get_desc((result) => {
+            console.log(`Description: ${result}`);
+          }, hset);
+        });
+      });
+    },
+    // myCallback,
+    "bob",
+    "asdfaeuisfsdafs" + Math.random() * 400,
+    "pwd"
+  );
+}
+
+testHsetGetSetDesc();
 
 // testModUser();
