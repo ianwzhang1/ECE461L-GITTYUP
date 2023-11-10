@@ -31,26 +31,31 @@ class UserProvider(DatabaseProvider):
                                        "uuid: $uuid}",
                                        usr=data['usr'], pwd=hashed.decode('utf-8'), salt=salt.decode('utf-8'),
                                        name=data['name'], uuid=str(uuid))
+            
+            data = {
+                'uid': str(uuid),
+                'session_id': self._session_handler.new_session(str(uuid))
+            }
+            return jsonify(data)
+
         except Exception as e:
             return Response(str(e), 400)
-
-        res = flask.make_response()
-        res.data = str(uuid)
-        res.set_cookie('session_id', self._session_handler.new_session(str(uuid)), samesite='None', secure= True)
-        res.status = 200
-        return res
 
     def get_projects(self, args: list[str], params: dict[str, str]) -> Response:
         try:
-            match = self._driver.execute_query("MATCH (u:User {uuid: $uuid})"
-                                               "RETURN u.projects", uuid=params['uid'])[0]
+            uid = params['uid']
+            if not self.uid_exists(uid):
+                return Response('User with that uid does not exist', 400)
+            
+            match = self._driver.execute_query("MATCH (u:User {uuid: $uid}) -[:MEMBER_OF]-> (p:Proj)"
+                                            " RETURN p.uuid",
+                                            uid = uid)
+            
+            projects = [proj.get ('p.uuid') for proj in match[0]]
+            data = projects
+            return jsonify(data)
         except Exception as e:
             return Response(str(e), 400)
-
-        if len(match) == 0:
-            return Response('No user could be found with this uid', 400)
-
-        return Response(match[0].get('u.projects'), 200)
 
     def get_info(self, args: list[str], params: dict[str, str]) -> Response:
         try:
@@ -58,8 +63,10 @@ class UserProvider(DatabaseProvider):
                                                "RETURN properties(u) AS map", uuid=params['uid'])[0]
         except Exception as e:
             return Response(str(e), 400)
-
-        return Response(match[0].get('map'), 200)
+        
+        data =  match[0].get('map')
+        
+        return Response(jsonify(data), 200)
 
     def post_login_noauth(self, args: list[str], data) -> Response:
         if data_missing(('usr', 'pwd'), data):
@@ -77,7 +84,7 @@ class UserProvider(DatabaseProvider):
             hashed = bcrypt.hashpw(data['pwd'].encode('utf-8'), salt)
 
             if match[0].get('u.password') == hashed.decode('utf-8'):
-                return jsonify({'uuid': match[0].get('u.uuid'), 'session_id': self._session_handler.new_session(match[0].get('u.uuid'))})
+                return jsonify({'uid': match[0].get('u.uuid'), 'session_id': self._session_handler.new_session(match[0].get('u.uuid'))})
             else:
                 return Response('Incorrect password', 400)
         except Exception as e:
@@ -91,7 +98,7 @@ class UserProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
-        return Response('Done', 200)
+        return jsonify('Done')
 
     def get_test_noauth(self, args: list[str], params: dict[str, str]) -> Response:
         return Response('Hey buddy!', 200)
