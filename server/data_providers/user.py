@@ -57,6 +57,66 @@ class UserProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
+    def get_summaries(self, args: list[str], params: dict[str, str]) -> Response:
+        def get_pids_part_of(uid):
+            match = self._driver.execute_query("MATCH (u:User {uuid: $uid}) -[:MEMBER_OF]-> (p:Proj)"
+                                            " RETURN p.uuid",
+                                            uid = uid)
+            pids = [proj.get ('p.uuid') for proj in match[0]]
+            return pids
+        
+        def get_pids_name(pid):
+            match = self._driver.execute_query("MATCH (p:Proj {uuid: $uuid})"
+                                               " RETURN p.name", uuid=pid)[0]
+            name = str(match[0].get('p.name'))
+            return name
+                
+        def get_all_hids():
+            match = self._driver.execute_query("MATCH (h:Hset)"
+                                               "RETURN h.uuid")
+            return [item.get('h.uuid') for item in match[0]]
+        
+        def get_hid_name(hid):
+            match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
+                                               " RETURN h.name", uuid=hid)[0]
+            name = str(match[0].get('h.name'))
+            return name
+        
+        def get_amount_checkedout(pid, hid):
+            match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) -[b:BORROWED]-> (h:Hset {uuid: $hid})"
+                                               " RETURN b.quant", 
+                                               pid = pid, hid= hid)[0]
+            if len(match) == 0:
+                return 0
+            quantity_borrowed = int(match[0].get("b.quant"))
+            return quantity_borrowed           
+
+        try:
+            uid = params['uid']
+            hids = get_all_hids()
+            final_data = dict()
+            for pid in get_pids_part_of(uid):
+                final_data[pid] = dict()
+                proj_name = get_pids_name(pid)
+                final_data[pid]["name"] = proj_name
+                final_data[pid]["checked_out"] = dict()
+                for hid in hids:
+                    checked_out = get_amount_checkedout(pid, hid)
+                    if checked_out == 0:
+                        continue
+                    final_data[pid]["checked_out"] = list()
+                    hardware_name = get_hid_name(hid)
+
+                    final_data[pid]["checked_out"].append([hid, hardware_name, checked_out])
+            
+            return jsonify(final_data)
+        
+        except Exception as e:
+            return Response(str(e), 400)
+
+
+   
+
     def get_info(self, args: list[str], params: dict[str, str]) -> Response:
         try:
             match = self._driver.execute_query("MATCH (u:User {uuid: $uuid})"
@@ -66,7 +126,7 @@ class UserProvider(DatabaseProvider):
         
         data =  match[0].get('map')
         
-        return Response(jsonify(data), 200)
+        return jsonify(data)
 
     def post_login_noauth(self, args: list[str], data) -> Response:
         if data_missing(('usr', 'pwd'), data):
