@@ -1,6 +1,6 @@
 from server.data_providers.database import DatabaseProvider
 from server.utils import data_missing
-from flask import Response
+from flask import Response, jsonify
 
 
 class HardwareProvider(DatabaseProvider):
@@ -25,17 +25,17 @@ class HardwareProvider(DatabaseProvider):
 
         except Exception as e:
             return Response(str(e), 400)
-
-        return Response(str(uuid), 200)
-
+        
+        return jsonify(str(uuid))
+    
     def get_allids(self, args: list[str], params: dict[str, str]) -> Response:
         try:
             match = self._driver.execute_query("MATCH (h:Hset)"
                                                "RETURN h.uuid")
         except Exception as e:
             return Response(e, 400)
-
-        return Response(str([item.get('h.uuid') for item in match[0]]), 200)
+        
+        return jsonify([item.get('h.uuid') for item in match[0]])
 
     def get_desc(self, args: list[str], params: dict[str, str]) -> Response:
         try:
@@ -47,7 +47,7 @@ class HardwareProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
-        return Response(match[0].get('h.desc'), 200)
+        return jsonify(match[0].get('h.desc'))
 
     def __hid_exists(self, hid) -> bool:
         match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
@@ -66,7 +66,7 @@ class HardwareProvider(DatabaseProvider):
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "SET h.desc = $desc ", desc=data['desc'], uuid=data["hid"])[0]
 
-            return Response('True', 200)
+            return jsonify(True)
 
         except Exception as e:
             return Response(str(e), 400)
@@ -82,7 +82,7 @@ class HardwareProvider(DatabaseProvider):
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "SET h.quant = $quant ", quant=data['quant'], uuid=data["hid"])[0]
 
-            return Response('True', 200)
+            return jsonify(True)
 
         except Exception as e:
             return Response(str(e), 400)
@@ -97,4 +97,4 @@ class HardwareProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
-        return Response(str(match[0].get('h.quant')), 200)
+        return jsonify(match[0].get('h.quant'))
