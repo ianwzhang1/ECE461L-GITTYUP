@@ -3,6 +3,8 @@ function alert(message) {
   console.error(message);
 }
 
+central_uri = "http://127.0.0.1:5000/";
+
 function addQueryParams(query, dictionary) {
   let internal_query = query;
   let first = true;
@@ -197,9 +199,7 @@ class BackendLink {
 }
 
 function testsignup() {
-  const backend = new BackendLink(
-    "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
-  );
+  const backend = new BackendLink(central_uri);
   backend.add_user(
     (result) => {
       console.log(result);
@@ -211,9 +211,7 @@ function testsignup() {
   );
 }
 function testGetHSets() {
-  const backend = new BackendLink(
-    "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
-  );
+  const backend = new BackendLink(central_uri);
   backend.user_add(
     (result) => {
       console.log(result);
@@ -229,9 +227,7 @@ function testGetHSets() {
 }
 
 function testHsetCreate() {
-  const backend = new BackendLink(
-    "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
-  );
+  const backend = new BackendLink(central_uri);
   backend.user_login(
     (result) => {
       console.log(result);

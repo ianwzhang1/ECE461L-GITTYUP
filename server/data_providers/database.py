@@ -35,7 +35,8 @@ class DatabaseProvider:
             self._post_actions[name] = func[1]
 
     # Returns Success/Fail status and message which will get stringified later
-    def process(self, is_post: bool, args: list[str], data=None, params: dict[str, str] = None) -> Response:
+    def process(self, is_post: bool, args: list[str], data=None, 
+                params: dict[str, str] = None) -> Response:
 
         if len(args) == 0:
             return Response('No path specified', 400)
