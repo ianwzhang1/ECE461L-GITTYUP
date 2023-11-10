@@ -22,20 +22,25 @@ class HardwareProvider(DatabaseProvider):
                                        "uuid: $uuid}",
                                        name=data["name"],
                                        uuid=str(uuid))
+            
+            return jsonify({
+                'message':str(uuid)
+            })
 
         except Exception as e:
             return Response(str(e), 400)
         
-        return jsonify(str(uuid))
+       
     
     def get_allids(self, args: list[str], params: dict[str, str]) -> Response:
         try:
             match = self._driver.execute_query("MATCH (h:Hset)"
                                                "RETURN h.uuid")
+            return jsonify([item.get('h.uuid') for item in match[0]])
         except Exception as e:
             return Response(e, 400)
         
-        return jsonify([item.get('h.uuid') for item in match[0]])
+        
 
     def get_desc(self, args: list[str], params: dict[str, str]) -> Response:
         try:
@@ -44,10 +49,11 @@ class HardwareProvider(DatabaseProvider):
 
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "RETURN h.desc", uuid=params['hid'])[0]
+            return jsonify(match[0].get('h.desc'))
         except Exception as e:
             return Response(str(e), 400)
 
-        return jsonify(match[0].get('h.desc'))
+        
 
     def __hid_exists(self, hid) -> bool:
         match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"

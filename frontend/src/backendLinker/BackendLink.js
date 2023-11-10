@@ -21,11 +21,17 @@ function addQueryParams(query, dictionary) {
 class BackendLink {
   constructor(url) {
     this.apiURL = url;
-    this.session = null;
+    this.session_id = null;
+  }
+
+  add_session(url) {
+    return addQueryParams(url, {
+      session_id: this.session_id,
+    });
   }
 
   // creates a new user and returns an ID if truly new, else none.
-  add_user(callbackFx, name, user, pwd) {
+  user_add(callbackFx, name, user, pwd) {
     const extension = "user/add";
     const full_url = this.apiURL + extension;
     const requestBody = {
@@ -53,8 +59,107 @@ class BackendLink {
       .then((json) => {
         const session = json["session_id"];
         const uid = json["uid"];
-        this.session = session;
+        this.session_id = session;
         callbackFx(uid);
+      })
+      .catch((error) => {
+        alert(error.message);
+        callbackFx(null);
+      });
+  }
+  user_login(callbackFx, name, user, pwd) {
+    const extension = "user/login";
+    const full_url = this.apiURL + extension;
+    const requestBody = {
+      usr: user,
+      pwd: pwd,
+    };
+    fetch(full_url, {
+      method: "post",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.status === 400) {
+          throw new Error("Username does not exist.");
+        } else if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then((json) => {
+        const session = json["session_id"];
+        const uid = json["uid"];
+        this.session_id = session;
+        callbackFx(uid);
+      })
+      .catch((error) => {
+        alert(error.message);
+        callbackFx(null);
+      });
+  }
+
+  user_projects(callbackFx, uid) {
+    const extension = "user/projects";
+    const uri = this.apiURL + extension;
+    const full_url = addQueryParams(uri, {
+      uid: uid,
+      session_id: this.session_id,
+    });
+
+    fetch(full_url, {
+      method: "get",
+    })
+      .then((response) => {
+        if (response.status === 400) {
+          throw new Error("uid does not exist");
+        } else if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then((json) => {
+        callbackFx(json);
+      })
+      .catch((error) => {
+        alert(error.message);
+        callbackFx(null);
+      });
+  }
+
+  hset_create(callbackFx, hset_name) {
+    const extension = "hset/add";
+    const full_url = addQueryParams(this.apiURL + extension, {
+      session_id: this.session_id,
+    });
+    console.log(full_url);
+
+    const requestBody = {
+      name: hset_name,
+    };
+
+    fetch(full_url, {
+      method: "post",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.status === 400) {
+          throw new Error("Hardware Set already exists");
+        } else if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return response.text();
+      })
+      .then((text) => {
+        callbackFx(text);
       })
       .catch((error) => {
         alert(error.message);
@@ -64,9 +169,8 @@ class BackendLink {
 
   all_hset_ids(callbackFx) {
     const extension = "hset/allids";
-    console.log(this.session);
     const full_url = addQueryParams(this.apiURL + extension, {
-      session_id: this.session,
+      session_id: this.session_id,
     });
 
     fetch(full_url, {
@@ -110,7 +214,7 @@ function testGetHSets() {
   const backend = new BackendLink(
     "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
   );
-  backend.add_user(
+  backend.user_add(
     (result) => {
       console.log(result);
       backend.all_hset_ids((result) => {
@@ -123,4 +227,25 @@ function testGetHSets() {
     "pwd"
   );
 }
-testGetHSets();
+
+function testHsetCreate() {
+  const backend = new BackendLink(
+    "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
+  );
+  backend.user_login(
+    (result) => {
+      console.log(result);
+      backend.hset_create((result) => {
+        console.log(result);
+      }, "ipads");
+    },
+    // myCallback,
+    "johnny",
+    "depp",
+    "pwd"
+  );
+}
+
+testHsetCreate();
+
+// testModUser();
