@@ -13,6 +13,7 @@ function Login() {
         <div className="app">
             <div className="header">
                 <PageTitle icon="fa fa-key" text="Login"/>
+
             </div>
             <div className="dashboard-login vertical-tiled shadow-box">
                 <h1>Welcome to GittyUp</h1>

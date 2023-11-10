@@ -1,8 +1,8 @@
 import {useNavigate} from "react-router-dom";
 import PageTitle from "../components/PageTitle";
-import LoginForm from "../login-page/LoginForm";
 import IconButton from "../components/IconButton";
 import React from "react";
+import ProjectForm from "./ProjectForm";
 
 function ProjectCreator() {
     let navigate = useNavigate(); // For redirections
@@ -13,9 +13,9 @@ function ProjectCreator() {
                 <PageTitle icon="fa fa-file" text="New Project"/>
             </div>
             <div className="dashboard-login vertical-tiled shadow-box">
-                <h1>Welcome to GittyUp</h1>
-                <LoginForm/>
-                <IconButton onClick={() => navigate('/signup')} text="New User"/>
+                <h1>Create a project</h1>
+                <ProjectForm/>
+                <IconButton onClick={() => navigate('/projects')} text="Cancel"/>
             </div>
             <br/>
         </div>
