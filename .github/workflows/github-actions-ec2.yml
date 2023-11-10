@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy GITTUP Flask Server
+    name: Deploy GITTYUP Flask Server
     runs-on: ubuntu-latest
 
     steps:
