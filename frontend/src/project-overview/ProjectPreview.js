@@ -1,7 +1,6 @@
 import React from 'react'
 
 import "./project.css";
-import "./button.css";
 import IconButton from "../components/IconButton";
 import HWList from "./HWList";
 import {useNavigate} from "react-router-dom";
@@ -13,7 +12,7 @@ function ProjectPreview(props) {
 
     let manageProject = (projectID) => {
         if (projectID === undefined) {
-            alert("Project is missing ID");
+            alert("ProjectView is missing ID");
             return;
         }
         navigate("/project/" + projectID);
