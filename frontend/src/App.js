@@ -1,13 +1,14 @@
 import React, {Fragment} from 'react';
 
-import Login from './loginPageComponents/Login.js';
-import SignUpBox from './signUpPage/SignUpBox.js';
+import Login from './login-page/Login.js';
 import './App.css'
 import ProjectOverview from './project-overview/ProjectOverview.js'
 import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom'
 import HW from './hwPage/HW.js';
-import login from "./loginPageComponents/LoginForm";
 import BackgroundCurves from "./components/BackgroundCurves";
+import Signup from "./signup-page/Signup";
+import Project from "./data/Project";
+import ProjectView from "./project-page/ProjectView";
 
 const url = "http://ec2-13-59-237-43.us-east-2.compute.amazonaws.com:5000/"
 
@@ -16,22 +17,17 @@ export let userID = null;
 
 export async function postData(path, data) {
     const response = await fetch(url + path, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        },
-        body: JSON.stringify(data)
+        method: "POST", headers: {
+            "Content-Type": "application/json", "Accept": "application/json"
+        }, body: JSON.stringify(data)
     });
     return response.json();
 }
 
 export async function getData(path) {
     const response = await fetch(url + path, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
+        method: "GET", headers: {
+            "Content-Type": "application/json", "Accept": "application/json"
         }
     });
     return response.json();
@@ -40,13 +36,17 @@ export async function getData(path) {
 
 function App() {
 
-    return (
-        <Router>
+    let getElement = (elem) => {
+        return userID !== null || loginOverride ? [<BackgroundCurves/>, elem] : <Navigate replace to={"/"}/>;
+    }
+
+    return (<Router>
             <Routes>
-                <Route exact path="/" element={[<Login/>, <BackgroundCurves/>]}/>
-                <Route exact path="/signup" element={userID !== null || loginOverride ? [<SignUpBox/>, <BackgroundCurves/>] : <Navigate replace to={"/"}/>}/>
-                <Route exact path="/projects" element={userID !== null || loginOverride ? [<ProjectOverview/>, <BackgroundCurves/>] : <Navigate replace to={"/"}/>}/>
-                <Route exact path="/hwSet" element={userID !== null || loginOverride ? [<HW/>, <BackgroundCurves/>] : <Navigate replace to={"/"}/>}/>
+                <Route exact path="/" element={getElement(<Login/>)}/>
+                <Route exact path="/signup" element={getElement(<Signup/>)}/>
+                <Route exact path="/projects" element={getElement(<ProjectOverview/>)}/>
+                <Route exact path="/hwSet" element={getElement(<HW/>)}/>
+                <Route path="/project/:pid" element={getElement(<ProjectView/>)}/>
             </Routes>
         </Router>
 

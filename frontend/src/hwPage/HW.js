@@ -1,6 +1,6 @@
 
 import './hw.css';
-import { NavBar } from "../navBar/NavBar.js";
+import { Navbar } from "../navBar/Navbar.js";
 import {ProjectFrame} from './ProjectFrame.js';
 import { CommentsPage } from './ProjectFrame.js';
 
@@ -12,7 +12,7 @@ function HW() {
           <div className="pageTitle">MyProject</div>
         </div>
         <div className="bar-group">
-          <NavBar />
+          <Navbar />
         </div>
         <div className="project-frame">
           <ProjectFrame />

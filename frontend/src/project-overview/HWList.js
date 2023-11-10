@@ -1,16 +1,20 @@
 import React from "react"
 
-import "./hwset.css";
+import "./hwlist.css";
 
-export const HWList = () => {
+function HWList(props) {
     return (
         <div>
             <h2>Hardware Sets</h2>
             <div className='hwlist-container'>
                 <div className="hwset">
-                    <label className="hwset-title">HWSet1</label>
+                    {props.hw.map((hardware) => (
+                        <label className="hwset-title">{hardware.name + ": " + hardware.amount}</label>
+                    ))}
                 </div>
             </div>
         </div>
-    )
+    );
 }
+
+export default HWList;

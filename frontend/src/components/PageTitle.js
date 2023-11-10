@@ -8,7 +8,7 @@ class PageTitle extends React.Component {
     render() {
         return (
             <div className="page-title">
-                <h1><i className="fa fa-folder-open page-logo"/>{this.props.text}</h1>
+                <h1><i className={this.props.icon + " page-logo"}/>{" " + this.props.text}</h1>
             </div>
         )
     }

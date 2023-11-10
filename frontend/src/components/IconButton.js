@@ -7,7 +7,7 @@ class IconButton extends React.Component {
 
     render() {
         return (
-            <button className="btn" onClick={this.props.onClick}><i className={this.props.icon}></i>{" " + this.props.text}</button>
+            <button onClick={this.props.onClick}><i className={this.props.icon}></i>{" " + this.props.text}</button>
         )
     }
 }

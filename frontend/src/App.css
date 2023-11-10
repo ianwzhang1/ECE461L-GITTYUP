@@ -1,221 +1,19 @@
 #root {
     flex: 1;
     text-align: center;
+    background-color: #fee4be;
 }
 
 .app { /* Core App Theme */
+    display: flex;
     justify-content: center;
-    background-color: #fee4be;
+    align-items: center;
+    flex-direction: column;
+    /*background-color: #fee4be;*/
     min-height: 100vh;
     width: 100%;
     font-family: "Krona One-Regular", Helvetica, serif;
-}
-
-.frame {
-    background-color: #ffe9c8;
-    height: 585px;
-    width: 971px;
-}
-
-.frame .overlap {
-    height: 585px;
-    position: relative;
-}
-
-.frame .div {
-    height: 64px;
-    left: 15px;
-    overflow: hidden;
-    position: absolute;
-    top: 17px;
-    width: 272px;
-}
-
-.frame .overlap-group {
-    height: 32px;
-    left: 61px;
-    position: absolute;
-    top: 5px;
-    width: 228px;
-}
-
-.frame .text-wrapper {
-    color: #ff9900;
-    font-family: "Krona One-Regular", Helvetica;
-    font-size: 15px;
-    font-weight: 400;
-    left: 0;
-    letter-spacing: 0;
-    line-height: normal;
-    position: absolute;
-    text-decoration: underline;
-    top: 0;
-    width: 228px;
-}
-
-.frame .text-wrapper-project {
-    color: #ff9900;
-    font-family: "Krona One-Regular", Helvetica;
-    font-size: 20px;
-    font-weight: 400;
-    left: 24px;
-    letter-spacing: 0;
-    line-height: normal;
-    position: absolute;
-    text-decoration: underline;
-    top: 6px;
-    width: 171px;
-}
-
-.frame .polygon {
-    height: 13px;
-    left: 128px;
-    position: absolute;
-    top: 9px;
-    width: 23px;
-}
-
-.frame .icon-folder-file {
-    height: 30px;
-    left: 9px;
-    position: absolute;
-    top: 4px;
-    width: 37px;
-}
-
-.frame .vector {
-    height: 177px;
-    left: 0;
-    position: absolute;
-    top: 408px;
-    width: 650px;
-}
-
-.frame .img {
-    height: 585px;
-    left: 653px;
-    position: absolute;
-    top: 0;
-    width: 318px;
-}
-
-.frame .group {
-    height: 46px;
-    left: 309px;
-    position: absolute;
-    top: 17px;
-    width: 370px;
-}
-
-
-.frame .icon-home {
-    height: 30px;
-    left: 21px;
-    position: absolute;
-    top: 6px;
-    width: 33px;
-}
-
-
-.frame .project-frame {
-    height: 419px;
-    left: 15px;
-    position: absolute;
-    top: 72px;
-    width: 938px;
-}
-
-.frame .div-3 {
-    background-color: #ffe9c8;
-    border: 1px solid;
-    border-color: #ff9900b5;
-    border-radius: 25px;
-    height: 419px;
-    overflow: hidden;
-    position: relative;
-}
-
-.frame .div-4 {
-    height: 346px;
-    left: 21px;
-    position: absolute;
-    top: 30px;
-    width: 265px;
-}
-
-
-.frame .div-5 {
-    height: 346px;
-    left: 331px;
-    position: absolute;
-    top: 30px;
-    width: 265px;
-}
-
-
-.frame .div-6 {
-    height: 346px;
-    left: 641px;
-    position: absolute;
-    top: 30px;
-    width: 265px;
-}
-
-
-.frame .overlap-wrapper {
-    height: 61px;
-    left: 346px;
-    position: absolute;
-    top: 500px;
-    width: 264px;
-}
-
-.frame .new-project {
-    color: #ff9900;
-    height: 61px;
-    position: relative;
-    width: 262px;
-}
-
-.frame .text-wrapper-6 {
-    color: #ffe9c8;
-    font-family: "Krona One-Regular", Helvetica, serif;
-    font-size: 15px;
-    font-weight: 400;
-    left: 73px;
-    letter-spacing: 0;
-    line-height: normal;
-    position: absolute;
-    top: 0;
-    width: 171px;
-}
-
-.frame .group-6 {
-    height: 40px;
-    left: 109px;
-    position: absolute;
-    top: 19px;
-    width: 60px;
-}
-
-.frame .icon-person-wrapper {
-    background-color: #fee4be;
-    border: 2px solid;
-    border-color: #ff9900;
-    border-radius: 21.5px/21px;
-    height: 42px;
-    left: 910px;
-    position: absolute;
-    top: 8px;
-    width: 43px;
-}
-
-.frame .icon-person {
-    height: 26px;
-    left: 9px;
-    position: absolute;
-    top: 6px;
-    width: 21px;
+    z-index: 2;
 }
 
 .pill-box {
@@ -246,10 +44,13 @@
     text-align: left;
     padding: 0;
     margin: 0 10px;
-    position: absolute;
+    left: 0;
+    position: fixed;
 }
 
 .header {
+    top: 0;
+    position: absolute;
     display: flex;
     flex-direction: column;
 }
@@ -265,6 +66,7 @@
     overflow: visible;
     transform: scale(2);
     transform-origin: bottom left;
+    z-index: 1;
 
     fill: rgba(255, 161, 51, 0.30);
     stroke-width: 3px;
@@ -278,8 +80,36 @@
     overflow: visible;
     transform: scale(2);
     transform-origin: top right;
+    z-index: 1;
 
     fill: rgba(255, 153, 0, 0.57);
     stroke-width: 3px;
     stroke: rgba(255, 153, 0, 0.32);
 }
+
+.box {
+    height: 39px;
+    width: 177px;
+    position: fixed;
+    text-align: center;
+}
+
+button {
+    background-color: #ff9900;
+    font-size: 20px;
+    font-weight: 400;
+    color: #fee4be;
+    border: none;
+    cursor: pointer;
+    align-self: center;
+    height: auto;
+    border-radius: 15px;
+    width: auto;
+    padding: 10px;
+}
+
+button:hover {
+    background-color: #0056b3;
+
+}
+
