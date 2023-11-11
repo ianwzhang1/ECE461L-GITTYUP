@@ -99,15 +99,14 @@ class UserProvider(DatabaseProvider):
                 final_data[pid] = dict()
                 proj_name = get_pids_name(pid)
                 final_data[pid]["name"] = proj_name
-                final_data[pid]["checked_out"] = dict()
+                final_data[pid]["checked_out"] = []
                 for hid in hids:
                     checked_out = get_amount_checkedout(pid, hid)
                     if checked_out == 0:
                         continue
-                    final_data[pid]["checked_out"] = list()
                     hardware_name = get_hid_name(hid)
 
-                    final_data[pid]["checked_out"].append([hid, hardware_name, checked_out])
+                    final_data[pid]["checked_out"].append({'id': hid, 'name': hardware_name, 'checked_out': checked_out})
             
             return jsonify(final_data)
         

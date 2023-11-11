@@ -6,14 +6,14 @@ import SignupForm from "../signup-page/SignupForm";
 import IconButton from "../components/IconButton";
 import Project from "../data/Project";
 import HW from "../data/HW";
-import {current_user} from "../backendLinker/BackendLink";
-import {UserContext} from "../App";
+import {getCurrentUser, UserContext} from "../App";
 
 function ProjectView(props) {
     let navigate = useNavigate(); // For redirections
     let params = useParams();
     let location = useLocation();
-    const { currentUser, setCurrentUser } = useContext(UserContext);
+
+    let currentUser = getCurrentUser();
 
     // The project path is located at params['pid']. Use this to get more detailed info about the project.
     console.log(params['pid'])
@@ -23,6 +23,9 @@ function ProjectView(props) {
     let addCollaborator = () => {
         let collaborator = document.getElementById("collaborator-input");
         console.log(collaborator.value); // This gets the input
+    }
+
+    let test = () => {
     }
 
     return (
@@ -61,6 +64,7 @@ function ProjectView(props) {
                 </div>
             </div>
             <br/>
+            <IconButton onClick={() => test()} text="test"/>
             <IconButton onClick={() => navigate('/projects')} text="Back to Projects"/>
             {false ? <div>
                 <br/>

@@ -2,23 +2,19 @@ import React, {useContext} from 'react';
 import './Login.css';
 import {Link, Navigate, useNavigate} from "react-router-dom"
 import IconButton from "../components/IconButton";
-import BackendLink, {get, post, request, setCurrentUser} from "../backendLinker/BackendLink";
-import {setUser, user, global, setGlobal, UserContext} from "../App";
+import {get, post} from "../backendLinker/BackendLink";
+import {UserContext, cookies, setCurrentUser, getCurrentUser} from "../App";
 import User from "../data/User";
-
-//import Box from './Box';
-// import './box.css';
-//import {postData} from "../App.js"
-
 function LoginForm() {
     let navigate = useNavigate();
-    const { currentUser, setCurrentUser } = useContext(UserContext);
 
     let onLogin = () => {
         console.log("Logging in...");
         // Add a password requirement
         let username = document.getElementById("username").value;
         let password = document.getElementById("password").value;
+
+        let currentUser = getCurrentUser();
 
         post("user/login", currentUser, {"usr": username, "pwd": password}).then(async (response) => {
             let json = await response.json();

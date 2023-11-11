@@ -21,7 +21,8 @@ function ProjectPreview(props) {
     return (
         <div className="project shadow-box">
             <h1>{props.project.name}</h1>
-            <HWList hw={props.project.hw}/>
+            {Object.keys(props.project.checked_out).length !== 0 ? <HWList hw={props.project.checked_out}/> :
+            <h4>No Hardware Checked Out</h4>}
             <IconButton onClick={() => manageProject(props.project.id)} icon="fa fa-wrench" text="Manage"/>
         </div>
     )
