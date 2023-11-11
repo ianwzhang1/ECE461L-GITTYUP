@@ -4,9 +4,9 @@ FROM node:20.9.0
 
 WORKDIR .
 
-COPY package.json package.json
-RUN npm install -g serve
-
 COPY . .
+RUN npm install
+RUN npm run build
+RUN npm install -g serve
 
 CMD [ "serve", "-s", "build"]

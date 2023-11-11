@@ -15,12 +15,6 @@ function ProjectView(props) {
     let location = useLocation();
     const { currentUser, setCurrentUser } = useContext(UserContext);
 
-    useEffect(() => {
-        if (currentUser === null) {
-            navigate("/");
-        }
-    }, [location]);
-
     // The project path is located at params['pid']. Use this to get more detailed info about the project.
     console.log(params['pid'])
     // TODO: Perform a request to get detailed project data

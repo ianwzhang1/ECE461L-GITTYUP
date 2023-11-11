@@ -4,8 +4,8 @@ FROM python:3.11
 
 WORKDIR .
 
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+COPY requirements.txt server/requirements.txt
+RUN pip3 install -r server/requirements.txt
 
 COPY . .
 
