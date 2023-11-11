@@ -35,9 +35,6 @@ function ProjectOverview() {
             setProjects(toShow);
         });
     }
-     // [new Project('5187445e-916e-5b70-a56c-297f75f8814b', 'Project1', [new HW('Hammer', 10), new HW('Axe', 10), new HW('Jackhammer', 10), new HW('Knife', 10)]),
-        //new Project('07206b06-e8d5-524a-999c-da95d21ff5c3', 'Project2', [new HW('Hammer', 20)])]
-
     function newProject() {
         navigate("/new-project");
     }
@@ -60,7 +57,6 @@ function ProjectOverview() {
         <div className="app">
             <div className="header">
                 <PageTitle icon="fa fa-folder-open" text="Projects"/>
-                <Navbar/>
                 <LogoutButton/>
             </div>
 

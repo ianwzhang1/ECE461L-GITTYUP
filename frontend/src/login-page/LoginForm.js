@@ -23,6 +23,7 @@ function LoginForm() {
             } else {
                 let sessionId = json.session_id;
                 let uid = json.uid;
+                console.log(json)
                 setCurrentUser(new User(uid, username, sessionId));
                 navigate("/projects")
             }

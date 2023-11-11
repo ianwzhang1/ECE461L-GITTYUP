@@ -9,7 +9,7 @@ function HWList(props) {
             <div className='hwlist-container'>
                 <div className="hwset">
                     {props.hw.map((hardware) => (
-                        <label className="hwset-title">{hardware.name + ": " + hardware.quant}</label>
+                        <label className="hwset-title">{hardware.name + ": " + hardware.checked_out}</label>
                     ))}
                 </div>
             </div>

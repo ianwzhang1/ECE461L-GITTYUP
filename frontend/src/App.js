@@ -30,6 +30,7 @@ function App() {
 
     let currentUser = getCurrentUser();
     function getElementProtected(elem) {
+        console.log(currentUser);
         if (currentUser === undefined) {
             return <Navigate replace to={"/"}/>
         }

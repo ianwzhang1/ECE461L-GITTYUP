@@ -12,7 +12,9 @@ function LogoutButton() {
     }
 
     return (
-        <IconButton onClick={() => logout()} className="logout" icon="fa fa-key" text="Logout"></IconButton>
+        <div className="logout">
+            <IconButton onClick={() => logout()} icon="fa fa-key" text="Logout"></IconButton>
+        </div>
     )
 }
 

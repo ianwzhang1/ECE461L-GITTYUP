@@ -1,8 +1,8 @@
 import {useContext, useState} from "react";
 import {removeCurrentUser, setCurrentUser, UserContext, UseUserContext} from "../App";
 
-// export const central_uri = "http://127.0.0.1:5000/";
-export const central_uri = "http://ec2-18-191-66-75.us-east-2.compute.amazonaws.com:5000/"
+export const central_uri = "http://127.0.0.1:5000/";
+// export const central_uri = "http://ec2-18-191-66-75.us-east-2.compute.amazonaws.com:5000/"
 
 export async function post(path, currentUser, body) {
     if (currentUser !== undefined) {
