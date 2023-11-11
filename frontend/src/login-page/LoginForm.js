@@ -1,10 +1,10 @@
-import React, {useContext} from 'react';
-import './Login.css';
-import {Link, Navigate, useNavigate} from "react-router-dom"
+import React from 'react';
+import {useNavigate} from "react-router-dom"
 import IconButton from "../components/IconButton";
-import {get, post} from "../backendLinker/BackendLink";
-import {UserContext, cookies, setCurrentUser, getCurrentUser} from "../App";
+import {post} from "../backendLinker/BackendLink";
+import {setCurrentUser, getCurrentUser} from "../App";
 import User from "../data/User";
+
 function LoginForm() {
     let navigate = useNavigate();
 
@@ -18,14 +18,18 @@ function LoginForm() {
 
         post("user/login", currentUser, {"usr": username, "pwd": password}).then(async (response) => {
             let json = await response.json();
-            if (response.status !== 200) {
-                alert(json.message);
-            } else {
-                let sessionId = json.session_id;
-                let uid = json.uid;
-                console.log(json)
-                setCurrentUser(new User(uid, username, sessionId));
-                navigate("/projects")
+            switch (response.status) {
+                case 400:
+                    alert(json.message);
+                    return;
+                case 404:
+                    navigate("/");
+                    return;
+                default:
+                    let sessionId = json.session_id;
+                    let uid = json.uid;
+                    setCurrentUser(new User(uid, username, sessionId));
+                    navigate("/projects")
             }
         })
     }

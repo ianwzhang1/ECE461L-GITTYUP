@@ -1,23 +1,15 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./ProjectView.css";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import PageTitle from "../components/PageTitle";
-import SignupForm from "../signup-page/SignupForm";
 import IconButton from "../components/IconButton";
 import Project from "../data/Project";
-import HW from "../data/HW";
-import {current_user} from "../backendLinker/BackendLink";
-import {UserContext, getCurrentUser} from "../App";
-import BackendLink, {
-    get,
-    post,
-    request,
-    setCurrentUser,
-} from "../backendLinker/BackendLink";
+import {getCurrentUser, validateUser} from "../App";
+import {get, post} from "../backendLinker/BackendLink";
 import LogoutButton from "../components/LogoutButton";
 
 
-function ProjectView(props) {
+function ProjectView() {
     let navigate = useNavigate(); // For redirections
     let params = useParams();
     let location = useLocation();
@@ -30,28 +22,36 @@ function ProjectView(props) {
     function reloadProject() {
         get("proj/info", currentUser, {"pid": pid}).then(async (response) => {
             let data = await response.json();
-            console.log(data);
-            setProject(data);
+            switch (response.status) {
+                case 400:
+                    alert(data.message);
+                    return;
+                case 404:
+                    navigate("/")
+                    return;
+                default:
+                    setProject(data)
+            }
         });
     }
 
     useEffect(() => {
+        if (!validateUser(currentUser, navigate)) return;
         reloadProject();
     }, [location]);
 
     let currentUser = getCurrentUser();
-    // The project path is located at params['pid']. Use this to get more detailed info about the project.
-
 
     let addCollaborator = () => {
         let collaborator = document.getElementById("collaborator-input");
         post("proj/user_add", currentUser, {"pid": pid, "username": collaborator.value}).then(async (response) => {
+            let json = await response.json();
             switch (response.status) {
                 case 400:
-                    alert(response.json().message)
+                    alert(json.message);
                     return;
                 case 404:
-                    alert("Please log back in!")
+                    navigate("/")
                     return;
                 default:
                     alert("Added " + collaborator.value + " to the project!")
@@ -64,14 +64,15 @@ function ProjectView(props) {
     function checkOut(input) {
         let element = document.getElementById(input);
         let quant = element.value;
-        if (quant === null || quant === 0) return;
+        if (quant === '' || quant === 0) return;
         post("proj/checkout", currentUser, {"hid": input, "pid": pid, "quant": quant}).then(async (response) => {
+            let json = await response.json();
             switch (response.status) {
                 case 400:
-                    alert("Invalid quantity!")
+                    alert(json.message);
                     return;
                 case 404:
-                    alert("Please log back in!")
+                    navigate("/");
                     return;
                 default:
                     element.value = '';
@@ -83,14 +84,15 @@ function ProjectView(props) {
     function checkIn(input) {
         let element = document.getElementById(input);
         let quant = element.value;
-        if (quant === null || quant === 0) return;
+        if (quant === '' || quant === 0) return;
         post("proj/return", currentUser, {"hid": input, "pid": pid, "quant": quant}).then(async (response) => {
+            let json = await response.json();
             switch (response.status) {
                 case 400:
-                    alert("Invalid quantity!")
+                    alert(json.message);
                     return;
                 case 404:
-                    alert("Please log back in!")
+                    navigate("/");
                     return;
                 default:
                     element.value = '';
@@ -121,17 +123,20 @@ function ProjectView(props) {
                         </tr>
                         </thead>
                         <tbody>
-                        {project.hw.map((hardware) => (
-                            <tr>
+                        {project.hw.map((hardware, id) => (
+                            <tr key={"row_" + id}>
                                 <td>{hardware.name}</td>
                                 <td><label className="desc-label">{hardware.desc}</label></td>
                                 <td>{hardware.availability}</td>
                                 <td><label className="qty-input">{hardware.checked_out}</label></td>
                                 <td>
                                     <div className="pill-box">
-                                        <input type="text" className="qty-input" id={hardware.hid} placeholder={"Qty"}></input>
-                                        <button className="small-button" onClick={() => checkOut(hardware.hid)}>+</button>
-                                        <button className="small-button" onClick={() => checkIn(hardware.hid)}>-</button>
+                                        <input type="number" className="qty-input pill-input" id={hardware.hid}
+                                               placeholder={"Qty"}></input>
+                                        <button className="small-button" onClick={() => checkOut(hardware.hid)}>+
+                                        </button>
+                                        <button className="small-button" onClick={() => checkIn(hardware.hid)}>-
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -145,7 +150,7 @@ function ProjectView(props) {
                 onClick={() => navigate("/projects")}
                 text="Back to Projects"
             />
-            {true ? ( // TODO: Admin only operation
+            {false ? ( // TODO: Admin only operation
                 <div>
                     <br/>
                     <h1>Admin Controls</h1>

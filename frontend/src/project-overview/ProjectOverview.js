@@ -1,56 +1,84 @@
-import React, {useContext, useEffect, useState} from "react";
-import "./style.css";
-import {Navbar} from "../navBar/Navbar.js";
+import React, {useEffect, useState} from "react";
 import ProjectPreview from "./ProjectPreview";
 import IconButton from "../components/IconButton";
 import PageTitle from "../components/PageTitle";
 import {useLocation, useNavigate} from "react-router-dom";
-import ProjectView from "../data/Project";
-import HW from "../data/HW";
-import Project from "../data/Project";
-import {get, request} from "../backendLinker/BackendLink";
-import {getCurrentUser, UserContext} from "../App";
-import Login from "../login-page/Login";
+import {get, post} from "../backendLinker/BackendLink";
+import {getCurrentUser, validateUser} from "../App";
 import LogoutButton from "../components/LogoutButton";
-import Cookies from "universal-cookie";
-import project from "../data/Project";
-
-let set = false;
 
 function ProjectOverview() {
     let navigate = useNavigate();
+    let location = useLocation();
     let [projects, setProjects] = useState(null);
 
     let currentUser = getCurrentUser();
 
-    // Load in all the data
-    if (!set) {
+    function loadProjects() {
+        // Load in all the data
         get("user/summaries", currentUser, {"uid": currentUser.id}).then(async (response) => {
-            let data = await response.json();
-            let toShow = [];
-            Object.entries(data).forEach((entry) => {
-                entry[1].id = entry[0];
-                toShow.push(entry[1]);
-            });
-            setProjects(toShow);
+            let json = await response.json();
+            switch (response.status) {
+                case 400:
+                    alert(json.message);
+                    return;
+                case 404:
+                    navigate("/")
+                    return;
+                default:
+                    let toShow = [];
+                    Object.entries(json).forEach((entry) => {
+                        entry[1].id = entry[0];
+                        toShow.push(entry[1]);
+                    });
+                    setProjects(toShow);
+            }
         });
     }
-    function newProject() {
-        navigate("/new-project");
-    }
+
+    useEffect(() => {
+        if (!validateUser(currentUser, navigate)) return;
+        loadProjects();
+    }, [location]);
 
     function getProjects(projects) {
         if (projects === null) {
             return <h1>Loading...</h1>
         }
 
-        if (Object.keys(projects).length !== 0){
-            return projects.map((project) => (
-                <ProjectPreview project={project}/>
+        if (Object.keys(projects).length !== 0) {
+            return projects.map((project, id) => (
+                <ProjectPreview key={"preview_" + id} project={project}/>
             ))
         } else {
             return <h1>No Projects</h1>
         }
+    }
+
+    function joinProject() {
+        let elem = document.getElementById("join-input");
+        let projName = elem.value;
+
+        if (projName === "") {
+            alert("Please enter a Project Name!")
+            return;
+        }
+
+        post("proj/user_add", currentUser, {"projname": projName, "uid": currentUser.id}).then(async (response) => {
+            let json = await response.json();
+            switch (response.status) {
+                case 400:
+                    alert(json.message);
+                    return;
+                case 404:
+                    navigate("/")
+                    return;
+                default:
+                    alert("Joined " + projName + "!");
+                    elem.value = '';
+                    loadProjects();
+            }
+        })
     }
 
     return (
@@ -66,7 +94,13 @@ function ProjectOverview() {
                 </div>
             </div>
 
-            <IconButton onClick={() => newProject()} icon="fa fa-folder" text="New Project"/>
+            <br/>
+
+            <IconButton onClick={() => navigate("/new-project")} icon="fa fa-address-card" text="New Project"/>
+            <form onSubmit={e => e.preventDefault()} className="horizontal-tiled pill-box">
+                <input className="project-input pill-input" id="join-input" />
+                <IconButton onClick={() => joinProject()} icon="fa fa-door-open" text="Join Project"/>
+            </form>
         </div>
     );
 }

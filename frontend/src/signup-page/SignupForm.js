@@ -1,9 +1,7 @@
-import React, {useContext} from 'react';
-import '../login-page/LoginForm.css';
+import React from 'react';
 import IconButton from "../components/IconButton";
 import {useNavigate} from "react-router-dom";
-import {getCurrentUser, setUser, user, UserContext} from "../App";
-import User from "../data/User";
+import {getCurrentUser} from "../App";
 import {post} from "../backendLinker/BackendLink";
 
 function SignupForm() {
@@ -19,10 +17,13 @@ function SignupForm() {
 
         post("user/add", currentUser, {"name": name, "usr": username, "pwd": password}).then(async (response) => {
             let json = await response.json();
-            if (response.status !== 200) {
-                alert(json.message);
-            } else {
-                navigate("/")
+            switch (response.status) {
+                case 400:
+                    alert(json.message);
+                    return;
+                default:
+                    alert("New user created! Please log in.")
+                    navigate("/")
             }
         })
     }

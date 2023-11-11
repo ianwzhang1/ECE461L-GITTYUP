@@ -1,7 +1,7 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import IconButton from "./IconButton";
 import {useNavigate} from "react-router-dom";
-import {removeCurrentUser, setCurrentUser, UserContext} from "../App";
+import {removeCurrentUser} from "../App";
 
 function LogoutButton() {
     let navigate = useNavigate();

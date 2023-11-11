@@ -1,5 +1,4 @@
 import React from 'react';
-import './LoginForm.css';
 import LoginForm from './LoginForm.js';
 import IconButton from "../components/IconButton";
 import {useNavigate} from "react-router-dom";

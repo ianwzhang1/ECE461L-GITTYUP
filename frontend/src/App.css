@@ -112,6 +112,7 @@ button {
     border-radius: 15px;
     width: auto;
     padding: 10px;
+    margin: inherit;
 }
 
 button:hover {
@@ -126,3 +127,13 @@ button:hover {
     position: fixed;
 }
 
+.pill-input {
+    text-align: center;
+    border-radius: 15px;
+}
+
+.project-input {
+    width: 200px;
+    margin: 9px 0px 9px 10px;
+    font-size: 20px;
+}
