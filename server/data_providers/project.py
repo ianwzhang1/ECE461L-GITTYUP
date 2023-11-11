@@ -357,15 +357,16 @@ class ProjectProvider(DatabaseProvider):
             project_data["desc"] = description
 
             all_hardwares = get_all_hids()
-            checked_outs = dict()
+            checked_outs = []
             for hid in all_hardwares:
                 quantity = get_amount_checkedout(params['pid'], hid)
                 hset = hid
                 hset_name = get_hid_name(hid)
-                checked_outs[hset] = {
+                checked_outs.append({
+                    'id': hid,
                     'name': hset_name,
                     'quant': quantity,
-                }
+                })
             
             project_data['checked_out'] = checked_outs
 

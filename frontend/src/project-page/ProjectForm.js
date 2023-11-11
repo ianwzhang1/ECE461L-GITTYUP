@@ -3,13 +3,12 @@ import '../login-page/Login.css';
 import {Link, Navigate, useNavigate} from "react-router-dom"
 import IconButton from "../components/IconButton";
 import BackendLink, {get, post, request, setCurrentUser} from "../backendLinker/BackendLink";
-import {setUser, user, global, setGlobal, UserContext} from "../App";
+import {setUser, user, global, setGlobal, UserContext, getCurrentUser} from "../App";
 import User from "../data/User";
 
 function ProjectForm() {
     let navigate = useNavigate();
-    const { currentUser, setCurrentUser } = useContext(UserContext);
-
+    let currentUser = getCurrentUser();
     let onCreate = () => {
         console.log("Creating project...");
         let projName = document.getElementById("name").value;

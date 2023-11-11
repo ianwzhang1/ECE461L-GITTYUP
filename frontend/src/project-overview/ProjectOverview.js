@@ -13,25 +13,26 @@ import {getCurrentUser, UserContext} from "../App";
 import Login from "../login-page/Login";
 import LogoutButton from "../components/LogoutButton";
 import Cookies from "universal-cookie";
+import project from "../data/Project";
 
 let set = false;
 
 function ProjectOverview() {
     let navigate = useNavigate();
-    let [projects, setProjects] = useState([]);
+    let [projects, setProjects] = useState(null);
 
     let currentUser = getCurrentUser();
 
     // Load in all the data
     if (!set) {
-        get("user/projects", currentUser, {"uid": currentUser.id}).then(async (response) => {
-            let projectIds = await response.json();
-            set = true;
-
-            let projects = [];
-            for (let id in projectIds) {
-                // get("proj/")
-            }
+        get("user/summaries", currentUser, {"uid": currentUser.id}).then(async (response) => {
+            let data = await response.json();
+            let toShow = [];
+            Object.entries(data).forEach((entry) => {
+                entry[1].id = entry[0];
+                toShow.push(entry[1]);
+            });
+            setProjects(toShow);
         });
     }
      // [new Project('5187445e-916e-5b70-a56c-297f75f8814b', 'Project1', [new HW('Hammer', 10), new HW('Axe', 10), new HW('Jackhammer', 10), new HW('Knife', 10)]),
@@ -39,6 +40,20 @@ function ProjectOverview() {
 
     function newProject() {
         navigate("/new-project");
+    }
+
+    function getProjects(projects) {
+        if (projects === null) {
+            return <h1>Loading...</h1>
+        }
+
+        if (Object.keys(projects).length !== 0){
+            return projects.map((project) => (
+                <ProjectPreview project={project}/>
+            ))
+        } else {
+            return <h1>No Projects</h1>
+        }
     }
 
     return (
@@ -51,9 +66,7 @@ function ProjectOverview() {
 
             <div className="project-frame">
                 <div className="horizontal-tiled">
-                    {Object.keys(projects).length !== 0 ? projects.map((project) => (
-                        <ProjectPreview project={project}/>
-                    )) : <h1>No Projects</h1>}
+                    {getProjects(projects)}
                 </div>
             </div>
 

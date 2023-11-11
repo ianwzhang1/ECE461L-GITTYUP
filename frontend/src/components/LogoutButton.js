@@ -1,14 +1,13 @@
 import React, {useContext} from 'react';
 import IconButton from "./IconButton";
 import {useNavigate} from "react-router-dom";
-import {UserContext} from "../App";
+import {removeCurrentUser, setCurrentUser, UserContext} from "../App";
 
 function LogoutButton() {
     let navigate = useNavigate();
-    const { currentUser, setCurrentUser } = useContext(UserContext);
 
     function logout() {
-        setCurrentUser(null);
+        removeCurrentUser();
         navigate("/")
     }
 
