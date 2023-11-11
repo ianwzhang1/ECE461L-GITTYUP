@@ -1,11 +1,11 @@
 import {useContext, useState} from "react";
 import {UserContext, UseUserContext} from "../App";
 
-//export const central_uri = "http://127.0.0.1:5000/";
- export const central_uri = "http://ec2-3-133-93-59.us-east-2.compute.amazonaws.com:5000/"
+export const central_uri = "http://127.0.0.1:5000/";
+// export const central_uri = "http://ec2-3-133-93-59.us-east-2.compute.amazonaws.com:5000/"
 
 export async function post(path, currentUser, body) {
-    if (currentUser !== null) {
+    if (currentUser !== undefined) {
         if (!("uid" in body)) body.uid = currentUser.id;
         path = path + "?session_id=" + currentUser.session_id;
     }

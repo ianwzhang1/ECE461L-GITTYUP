@@ -9,17 +9,18 @@ import ProjectView from "../data/Project";
 import HW from "../data/HW";
 import Project from "../data/Project";
 import {get, request} from "../backendLinker/BackendLink";
-import {UserContext} from "../App";
+import {getCurrentUser, UserContext} from "../App";
 import Login from "../login-page/Login";
 import LogoutButton from "../components/LogoutButton";
+import Cookies from "universal-cookie";
 
 let set = false;
 
 function ProjectOverview() {
     let navigate = useNavigate();
-    const { currentUser, setCurrentUser } = useContext(UserContext);
-
     let [projects, setProjects] = useState([]);
+
+    let currentUser = getCurrentUser();
 
     // Load in all the data
     if (!set) {
