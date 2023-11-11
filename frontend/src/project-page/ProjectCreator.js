@@ -1,11 +1,18 @@
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import PageTitle from "../components/PageTitle";
 import IconButton from "../components/IconButton";
-import React from "react";
+import React, {useEffect} from "react";
 import ProjectForm from "./ProjectForm";
+import {getCurrentUser, validateUser} from "../App";
 
 function ProjectCreator() {
     let navigate = useNavigate(); // For redirections
+    let location = useLocation();
+    let currentUser = getCurrentUser();
+
+    useEffect(() => {
+        if (!validateUser(currentUser, navigate)) return;
+    }, [location]);
 
     return (
         <div className="app">

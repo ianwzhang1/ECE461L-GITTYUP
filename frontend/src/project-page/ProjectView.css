@@ -103,13 +103,13 @@ body{
 .small-button {
     font-size: 15px;
     padding: 4px;
+    width: 25px;
+    height: 25px;
     margin: 5px 10px 5px 0px;
 }
 
 .qty-input {
     width: 50px;
-    text-align: center;
-    border-radius: 15px;
     margin: 5px 5px 0px 10px;
 }
 
@@ -120,4 +120,8 @@ body{
     border-radius: 15px;
     padding: 7px 10px 7px 10px;
     margin: 5px 5px 0px 10px;
+}
+
+.desc-label {
+    overflow: hidden;
 }

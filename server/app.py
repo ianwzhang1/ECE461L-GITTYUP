@@ -3,7 +3,7 @@ from base64 import decode
 from neo4j import GraphDatabase, exceptions  # Graph DB
 import uuid
 from flask import Flask, request, jsonify, Response
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import sys
 import signal
 
@@ -15,7 +15,7 @@ from server.session_handler import SessionHandler
 app = Flask('GITTYUP')
 app.config.from_pyfile('secrets.properties', silent=False)
 
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True, origins='*')
 
 # Initialize graph driver
 try:

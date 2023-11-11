@@ -1,40 +1,116 @@
-import React, {useContext, useEffect} from 'react';
-import './ProjectView.css';
+import React, {useEffect, useState} from "react";
+import "./ProjectView.css";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import PageTitle from "../components/PageTitle";
-import SignupForm from "../signup-page/SignupForm";
 import IconButton from "../components/IconButton";
 import Project from "../data/Project";
-import HW from "../data/HW";
-import {getCurrentUser, UserContext} from "../App";
+import {getCurrentUser, validateUser} from "../App";
+import {get, post} from "../backendLinker/BackendLink";
+import LogoutButton from "../components/LogoutButton";
 
-function ProjectView(props) {
+
+function ProjectView() {
     let navigate = useNavigate(); // For redirections
     let params = useParams();
     let location = useLocation();
+    const [project, setProject] = useState(
+        new Project("", "Loading, please wait", [])
+    );
+
+    let pid = params["pid"];
+
+    function reloadProject() {
+        get("proj/info", currentUser, {"pid": pid}).then(async (response) => {
+            let data = await response.json();
+            switch (response.status) {
+                case 400:
+                    alert(data.message);
+                    return;
+                case 404:
+                    navigate("/")
+                    return;
+                default:
+                    setProject(data)
+            }
+        });
+    }
+
+    useEffect(() => {
+        if (!validateUser(currentUser, navigate)) return;
+        reloadProject();
+    }, [location]);
 
     let currentUser = getCurrentUser();
 
-    // The project path is located at params['pid']. Use this to get more detailed info about the project.
-    console.log(params['pid'])
-    // TODO: Perform a request to get detailed project data
-    let project = new Project('5187445e-916e-5b70-a56c-297f75f8814b', 'Project1', [new HW('Hammer', 10), new HW('Axe', 10), new HW('Jackhammer', 10), new HW('Knife', 10)]);
-
     let addCollaborator = () => {
         let collaborator = document.getElementById("collaborator-input");
-        console.log(collaborator.value); // This gets the input
+        post("proj/user_add", currentUser, {"pid": pid, "username": collaborator.value}).then(async (response) => {
+            let json = await response.json();
+            switch (response.status) {
+                case 400:
+                    alert(json.message);
+                    return;
+                case 404:
+                    navigate("/")
+                    return;
+                default:
+                    alert("Added " + collaborator.value + " to the project!")
+                    collaborator.value = '';
+                    reloadProject();
+            }
+        })
+    };
+
+    function checkOut(input) {
+        let element = document.getElementById(input);
+        let quant = element.value;
+        if (quant === '' || quant === 0) return;
+        post("proj/checkout", currentUser, {"hid": input, "pid": pid, "quant": quant}).then(async (response) => {
+            let json = await response.json();
+            switch (response.status) {
+                case 400:
+                    alert(json.message);
+                    return;
+                case 404:
+                    navigate("/");
+                    return;
+                default:
+                    element.value = '';
+                    reloadProject();
+            }
+        })
     }
 
-    let test = () => {
+    function checkIn(input) {
+        let element = document.getElementById(input);
+        let quant = element.value;
+        if (quant === '' || quant === 0) return;
+        post("proj/return", currentUser, {"hid": input, "pid": pid, "quant": quant}).then(async (response) => {
+            let json = await response.json();
+            switch (response.status) {
+                case 400:
+                    alert(json.message);
+                    return;
+                case 404:
+                    navigate("/");
+                    return;
+                default:
+                    element.value = '';
+                    reloadProject();
+            }
+        })
     }
+
 
     return (
         <div className="app">
             <div className="header">
                 <PageTitle icon="fa fa-file" text="Project"/>
+                <LogoutButton/>
             </div>
-            <div className='dashboard-login vertical-tiled'>
+            <div className="dashboard-login vertical-tiled">
                 <h1>{project.name}</h1>
+                <h4>{project.desc}</h4>
                 <div className="table-wrapper">
                     <table className="fl-table">
                         <thead>
@@ -42,19 +118,25 @@ function ProjectView(props) {
                             <th>Hardware</th>
                             <th>Description</th>
                             <th>Availability</th>
-                            <th>Modify Checked Out</th>
+                            <th style={{padding: "0 10px"}}>Checked Out</th>
+                            <th>Checkout/Return</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {project.hw.map((hardware) => (
-                            // TODO: Get details about hardware to find out description and total availability, since this is not in the project
-                            <tr>
+                        {project.hw.map((hardware, id) => (
+                            <tr key={"row_" + id}>
                                 <td>{hardware.name}</td>
-                                <td>{"Description"}</td>
-                                <td>{"Availability"}</td>
+                                <td><label className="desc-label">{hardware.desc}</label></td>
+                                <td>{hardware.availability}</td>
+                                <td><label className="qty-input">{hardware.checked_out}</label></td>
                                 <td>
                                     <div className="pill-box">
-                                        <input className="qty-input" value={hardware.amount}></input> <button className="small-button">Apply</button>
+                                        <input type="number" className="qty-input pill-input" id={hardware.hid}
+                                               placeholder={"Qty"}></input>
+                                        <button className="small-button" onClick={() => checkOut(hardware.hid)}>+
+                                        </button>
+                                        <button className="small-button" onClick={() => checkIn(hardware.hid)}>-
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -64,13 +146,22 @@ function ProjectView(props) {
                 </div>
             </div>
             <br/>
-            <IconButton onClick={() => test()} text="test"/>
-            <IconButton onClick={() => navigate('/projects')} text="Back to Projects"/>
-            {false ? <div>
-                <br/>
-                <h1>Admin Controls</h1>
-                <input id="collaborator-input" className="name-input"></input><IconButton onClick={() => addCollaborator()} icon="fa fa-plus" text="Add Collaborator"/>
-            </div> : null}
+            <IconButton
+                onClick={() => navigate("/projects")}
+                text="Back to Projects"
+            />
+            {false ? ( // TODO: Admin only operation
+                <div>
+                    <br/>
+                    <h1>Admin Controls</h1>
+                    <input id="collaborator-input" className="name-input"></input>
+                    <IconButton
+                        onClick={() => addCollaborator()}
+                        icon="fa fa-plus"
+                        text="Add Collaborator"
+                    />
+                </div>
+            ) : null}
         </div>
     );
 }
