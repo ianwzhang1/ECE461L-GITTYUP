@@ -37,7 +37,7 @@ class ProjectProvider(DatabaseProvider):
 
             # edges go from users to projects
             self._driver.execute_query("CREATE (p:Proj)"
-                                       " SET p = {name: $name, uuid: $proj_uuid desc: $desc}"
+                                       " SET p = {name: $name, uuid: $proj_uuid, desc: $desc}"
                                        " WITH p"
                                        " MATCH (u:User {uuid: $user_uuid})"
                                        " CREATE (u)-[:MEMBER_OF {admin:$admin} ]->(p)",
@@ -86,16 +86,30 @@ class ProjectProvider(DatabaseProvider):
     # The following is part of user
 
     def get_user_all(self, args: list[str], params: dict[str, str]) -> Response:
-        pid = params['pid']
-        if not self.__pid_exists(pid):
-            return Response('ProjectPreview with that pid does not exist', 400)
-        
-        match = self._driver.execute_query("MATCH (u:User) -[:MEMBER_OF]-> (p:Proj {uuid: $pid})"
-                                           " RETURN u.uuid",
-                                           pid = pid)
-        
+        try:
+            pid = params['pid']
+            if not self.__pid_exists(pid):
+                return Response('ProjectPreview with that pid does not exist', 400)
+            
+            match = self._driver.execute_query("MATCH (u:User) -[r:MEMBER_OF]-> (p:Proj {uuid: $pid})"
+                                            " RETURN u.uuid, r.admin",
+                                            pid = pid)[0]
+            users_list = list()
+            admins_list = list()
+            for user in match:
+                uid = user.get('u.uuid')
+                is_admin = user.get('r.admin')
+                users_list.append(uid)
+                if is_admin:
+                    admins_list.append(uid)
 
-        return jsonify(str([user.get ('u.uuid') for user in match[0]]))
+            result_dict = dict()
+            result_dict['users'] = users_list
+            result_dict['admins'] = admins_list
+
+            return jsonify(result_dict)
+        except Exception as e:
+            return Response(str(e), 400)
 
     def get_user_status(self, args: list[str], params: dict[str, str]) -> Response:
         if data_missing(('uid', 'pid'), params):
@@ -305,6 +319,26 @@ class ProjectProvider(DatabaseProvider):
             return Response(str(e), 400)
         
     def get_info(self, args:list[str], params) -> Response:
+        def get_all_hids():
+            match = self._driver.execute_query("MATCH (h:Hset)"
+                                               "RETURN h.uuid")
+            return [item.get('h.uuid') for item in match[0]]
+        
+        def get_hid_name(hid):
+            match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
+                                               " RETURN h.name", uuid=hid)[0]
+            name = str(match[0].get('h.name'))
+            return name
+        
+        def get_amount_checkedout(pid, hid):
+            match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) -[b:BORROWED]-> (h:Hset {uuid: $hid})"
+                                               " RETURN b.quant", 
+                                               pid = pid, hid= hid)[0]
+            if len(match) == 0:
+                return 0
+            quantity_borrowed = int(match[0].get("b.quant"))
+            return quantity_borrowed  
+        
         if data_missing(('pid',), params):
             return Response('Missing POST data', 400)
 
@@ -322,21 +356,17 @@ class ProjectProvider(DatabaseProvider):
             project_data["name"] = project_name
             project_data["desc"] = description
 
-
-            match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) -[b:BORROWED]-> (h:Hset)"
-                                               " RETURN b.quant, h.uuid, h.name", 
-                                               pid = params['pid'])[0]
-            
+            all_hardwares = get_all_hids()
             checked_outs = dict()
-
-            for proj_data in match:
-                quantity = int(proj_data.get('b.quant'))
-                hset = str(proj_data.get('h.uuid'))
-                hset_name = str(project_data.get('h.name'))
+            for hid in all_hardwares:
+                quantity = get_amount_checkedout(params['pid'], hid)
+                hset = hid
+                hset_name = get_hid_name(hid)
                 checked_outs[hset] = {
                     'name': hset_name,
                     'quant': quantity,
                 }
+            
             project_data['checked_out'] = checked_outs
 
             return jsonify(project_data)
