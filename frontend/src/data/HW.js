@@ -1,7 +1,8 @@
 class HW {
-    constructor(name, amount) {
+    constructor(name, amount, id) {
         this.name = name;
         this.amount = amount;
+        this.id = id;
     }
 
     // JSON Constructor?
