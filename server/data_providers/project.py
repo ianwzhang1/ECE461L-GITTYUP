@@ -37,7 +37,7 @@ class ProjectProvider(DatabaseProvider):
 
             # edges go from users to projects
             self._driver.execute_query("CREATE (p:Proj)"
-                                       " SET p = {name: $name, uuid: $proj_uuid desc: $desc}"
+                                       " SET p = {name: $name, uuid: $proj_uuid, desc: $desc}"
                                        " WITH p"
                                        " MATCH (u:User {uuid: $user_uuid})"
                                        " CREATE (u)-[:MEMBER_OF {admin:$admin} ]->(p)",
