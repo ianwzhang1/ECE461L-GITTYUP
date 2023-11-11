@@ -119,14 +119,20 @@ class UserProvider(DatabaseProvider):
 
     def get_info(self, args: list[str], params: dict[str, str]) -> Response:
         try:
+            if not self.uid_exists(params['uid']):
+                return Response('User with that uid does not exist', 400)
+
             match = self._driver.execute_query("MATCH (u:User {uuid: $uuid})"
                                                "RETURN properties(u) AS map", uuid=params['uid'])[0]
+        
+            
+            data =  match[0].get('map')
+            excludes = ["salt", "uuid", "password"]
+            for key in excludes:
+                data.pop(key)            
+            return jsonify(data)
         except Exception as e:
             return Response(str(e), 400)
-        
-        data =  match[0].get('map')
-        
-        return jsonify(data)
 
     def post_login_noauth(self, args: list[str], data) -> Response:
         if data_missing(('usr', 'pwd'), data):
