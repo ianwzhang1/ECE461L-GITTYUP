@@ -1,8 +1,8 @@
 import {useContext, useState} from "react";
-import {UserContext, UseUserContext} from "../App";
+import {removeCurrentUser, setCurrentUser, UserContext, UseUserContext} from "../App";
 
-export const central_uri = "http://127.0.0.1:5000/";
-// export const central_uri = "http://ec2-3-133-93-59.us-east-2.compute.amazonaws.com:5000/"
+// export const central_uri = "http://127.0.0.1:5000/";
+export const central_uri = "http://ec2-18-191-66-75.us-east-2.compute.amazonaws.com:5000/"
 
 export async function post(path, currentUser, body) {
     if (currentUser !== undefined) {
@@ -16,6 +16,12 @@ export async function post(path, currentUser, body) {
         headers: {
             "Content-Type": "application/json",
         },
+    }).then((response) => {
+        if (response.status === 404) {
+            removeCurrentUser();
+            alert("Please log back in!");
+        }
+        return response;
     });
 }
 
@@ -40,5 +46,11 @@ export async function get(path, currentUser, params) {
         headers: {
             "Content-Type": "application/json",
         },
-    })
+    }).then((response) => {
+        if (response.status === 404) {
+            removeCurrentUser();
+            alert("Please log back in!");
+        }
+        return response;
+    });
 }

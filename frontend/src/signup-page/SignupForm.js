@@ -2,14 +2,13 @@ import React, {useContext} from 'react';
 import '../login-page/LoginForm.css';
 import IconButton from "../components/IconButton";
 import {useNavigate} from "react-router-dom";
-import {setUser, user, UserContext} from "../App";
+import {getCurrentUser, setUser, user, UserContext} from "../App";
 import User from "../data/User";
 import {post} from "../backendLinker/BackendLink";
 
 function SignupForm() {
     let navigate = useNavigate();
-    const { currentUser, setCurrentUser } = useContext(UserContext);
-
+    let currentUser = getCurrentUser();
     let onSignup = () => {
         console.log("Signing up...");
         // Add a password requirement

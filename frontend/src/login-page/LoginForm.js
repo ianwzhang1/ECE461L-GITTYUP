@@ -16,8 +16,6 @@ function LoginForm() {
 
         let currentUser = getCurrentUser();
 
-        console.log(currentUser);
-
         post("user/login", currentUser, {"usr": username, "pwd": password}).then(async (response) => {
             let json = await response.json();
             if (response.status !== 200) {
