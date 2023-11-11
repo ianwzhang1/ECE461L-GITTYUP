@@ -1,5 +1,5 @@
 services:
-  flask:
+  react:
     build: .
     ports:
       - "3000:3000"
