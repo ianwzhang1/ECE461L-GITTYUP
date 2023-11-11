@@ -37,13 +37,14 @@ class ProjectProvider(DatabaseProvider):
 
             # edges go from users to projects
             self._driver.execute_query("CREATE (p:Proj)"
-                                       " SET p = {name: $name, uuid: $proj_uuid}"
+                                       " SET p = {name: $name, uuid: $proj_uuid desc: $desc}"
                                        " WITH p"
                                        " MATCH (u:User {uuid: $user_uuid})"
                                        " CREATE (u)-[:MEMBER_OF {admin:$admin} ]->(p)",
                                        name=data['name'], proj_uuid=str(project_uuid),
                                        user_uuid=data['uid'],
-                                       admin=True)
+                                       admin=True,
+                                       desc="")
             data = project_uuid
             return jsonify(data)
         except Exception as e:
@@ -302,5 +303,46 @@ class ProjectProvider(DatabaseProvider):
 
         except Exception as e:
             return Response(str(e), 400)
+        
+    def get_info(self, args:list[str], params) -> Response:
+        if data_missing(('pid',), params):
+            return Response('Missing POST data', 400)
+
+        try:
+            if not self.__pid_exists(params['pid']):
+                return Response('Project with that pid does not exist', 400)
+
+            match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) "
+                                               " RETURN p.name, p.desc ", 
+                                               pid = params['pid'])[0]
+                        
+            project_data = dict()            
+            project_name = match[0].get("p.name")
+            description = match[0].get("p.desc")
+            project_data["name"] = project_name
+            project_data["desc"] = description
+
+
+            match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) -[b:BORROWED]-> (h:Hset)"
+                                               " RETURN b.quant, h.uuid, h.name", 
+                                               pid = params['pid'])[0]
+            
+            checked_outs = dict()
+
+            for proj_data in match:
+                quantity = int(proj_data.get('b.quant'))
+                hset = str(proj_data.get('h.uuid'))
+                hset_name = str(project_data.get('h.name'))
+                checked_outs[hset] = {
+                    'name': hset_name,
+                    'quant': quantity,
+                }
+            project_data['checked_out'] = checked_outs
+
+            return jsonify(project_data)
+
+        except Exception as e:
+            return Response(str(e), 400)
+
 
 
