@@ -86,16 +86,30 @@ class ProjectProvider(DatabaseProvider):
     # The following is part of user
 
     def get_user_all(self, args: list[str], params: dict[str, str]) -> Response:
-        pid = params['pid']
-        if not self.__pid_exists(pid):
-            return Response('ProjectPreview with that pid does not exist', 400)
-        
-        match = self._driver.execute_query("MATCH (u:User) -[:MEMBER_OF]-> (p:Proj {uuid: $pid})"
-                                           " RETURN u.uuid",
-                                           pid = pid)
-        
+        try:
+            pid = params['pid']
+            if not self.__pid_exists(pid):
+                return Response('ProjectPreview with that pid does not exist', 400)
+            
+            match = self._driver.execute_query("MATCH (u:User) -[r:MEMBER_OF]-> (p:Proj {uuid: $pid})"
+                                            " RETURN u.uuid, r.admin",
+                                            pid = pid)[0]
+            users_list = list()
+            admins_list = list()
+            for user in match:
+                uid = user.get('u.uuid')
+                is_admin = user.get('r.admin')
+                users_list.append(uid)
+                if is_admin:
+                    admins_list.append(uid)
 
-        return jsonify(str([user.get ('u.uuid') for user in match[0]]))
+            result_dict = dict()
+            result_dict['users'] = users_list
+            result_dict['admins'] = admins_list
+
+            return jsonify(result_dict)
+        except Exception as e:
+            return Response(str(e), 400)
 
     def get_user_status(self, args: list[str], params: dict[str, str]) -> Response:
         if data_missing(('uid', 'pid'), params):
