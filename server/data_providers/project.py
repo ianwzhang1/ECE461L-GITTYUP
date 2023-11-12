@@ -250,6 +250,9 @@ class ProjectProvider(DatabaseProvider):
                                                "RETURN h.quant", uuid=data['hid'])[0]
 
             curr_quantity = match[0].get('h.quant')
+            if int(data['quant']) < 0:
+                return Response(f'Hey... Stop trying to break the system!', 400)
+
             modified = int(curr_quantity) - int(data['quant'])
             if modified < 0:
                 return Response(f'You may checkout only {curr_quantity} items!', 400)
@@ -296,6 +299,9 @@ class ProjectProvider(DatabaseProvider):
                 return Response('Project does not have this hardware set checked out', 400)
             old_quantity_borrowed = int(match[0].get("b.quant"))
             to_return = int(data['quant'])
+
+            if int(data['quant']) < 0:
+                return Response(f'Hey... Stop trying to break the system!', 400)
 
             if to_return > old_quantity_borrowed:
                 return Response(f'You may return only {old_quantity_borrowed} items!', 400)

@@ -5,7 +5,7 @@ FROM node:20.9.0
 WORKDIR .
 
 COPY . .
-RUN npm install
+RUN yarn install
 RUN npm run build
 RUN npm install -g serve
 

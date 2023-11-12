@@ -4,8 +4,8 @@ from flask import Response, jsonify
 
 
 class HardwareProvider(DatabaseProvider):
-    def post_add(self, args: list[str], data) -> Response:
-        if data_missing(('name','quant'), data):
+    def post_add_noauth(self, args: list[str], data) -> Response:
+        if data_missing(('name','quant', 'desc'), data):
             return Response('Missing POST data', 400)
 
         uuid = self.generate_uuid(data['name'])
@@ -20,10 +20,10 @@ class HardwareProvider(DatabaseProvider):
             self._driver.execute_query("CREATE (h:Hset)"
                                        "SET h = {name: $name,"
                                        " quant: $quant,"
-                                       "uuid: $uuid}",
+                                       "uuid: $uuid, desc: $desc}",
                                        name=data["name"],
                                        quant=data["quant"],
-                                       uuid=str(uuid))
+                                       uuid=str(uuid), desc=data['desc'])
             
             return jsonify(str(uuid))
 
