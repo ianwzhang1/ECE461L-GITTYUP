@@ -1,5 +1,8 @@
 # GittyUp
 
+## Documentation
+Read the user manual [here](https://docs.google.com/document/d/1U3_ZkrO8wHJ2TIfWOVHAIxjhLLEnA8T_Xhe0Ljb-eTQ/edit?usp=sharing)
+
 ## Accessing
 [Hosted on EC2](http://ec2-3-139-91-77.us-east-2.compute.amazonaws.com:3000)
 
