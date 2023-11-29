@@ -2,6 +2,7 @@ from server.data_providers.database import DatabaseProvider
 from server.utils import data_missing
 from flask import Response, jsonify
 
+
 class ProjectProvider(DatabaseProvider):
     def __uid_exists(self, uid) -> bool:
         match = self._driver.execute_query("MATCH (u:User {uuid: $uuid})"
@@ -27,11 +28,9 @@ class ProjectProvider(DatabaseProvider):
 
     def __hid_exists(self, hid) -> bool:
         match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
-                                               "RETURN h", uuid=hid)[0]  # 0 index unwraps EagerResult
+                                           "RETURN h", uuid=hid)[0]  # 0 index unwraps EagerResult
 
         return len(match) > 0
-
-
 
     def post_add(self, args: list[str], data) -> Response:
         if data_missing(('name', 'uid'), data):
@@ -64,7 +63,11 @@ class ProjectProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
-
+    def post_delete_noauth(self, args: list[str], data) -> Response:
+        if data['bypass'] != 'unittest':
+            return Response('Unauthorized', 404)
+        self._driver.execute_query("MATCH (p:Proj {name: $name}) DETACH DELETE p", name=data['name'])
+        return Response('OK')
 
     def post_desc(self, args: list[str], data) -> Response:
         if data_missing(('pid', 'desc'), data):
@@ -75,7 +78,7 @@ class ProjectProvider(DatabaseProvider):
                 return Response('ProjectPreview named by PID does not exist', 400)
 
             match = self._driver.execute_query("MATCH (p:Proj{uuid: $uuid}) "
-                                               " SET p.desc = $desc", desc= data['desc'], uuid=data['pid'])
+                                               " SET p.desc = $desc", desc=data['desc'], uuid=data['pid'])
 
             return jsonify('Done')
 
@@ -94,9 +97,6 @@ class ProjectProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
-
-
-
     # The following is part of user
 
     def get_user_all(self, args: list[str], params: dict[str, str]) -> Response:
@@ -106,8 +106,8 @@ class ProjectProvider(DatabaseProvider):
                 return Response('ProjectPreview with that pid does not exist', 400)
 
             match = self._driver.execute_query("MATCH (u:User) -[r:MEMBER_OF]-> (p:Proj {uuid: $pid})"
-                                            " RETURN u.uuid, r.admin",
-                                            pid = pid)[0]
+                                               " RETURN u.uuid, r.admin",
+                                               pid=pid)[0]
             users_list = list()
             admins_list = list()
             for user in match:
@@ -133,14 +133,13 @@ class ProjectProvider(DatabaseProvider):
         if not self.__uid_exists(uid):
             return Response('UID does not exist', 400)
         if not self.__pid_exists(pid):
-
             return Response('PID does not exist', 400)
 
         match = self._driver.execute_query("MATCH (u:User {uuid: $uid})"
-                                   "-[r:MEMBER_OF]->(p:Proj {uuid: $pid})"
-                                   "RETURN r.admin",
-                                   uid = uid,
-                                   pid = pid)
+                                           "-[r:MEMBER_OF]->(p:Proj {uuid: $pid})"
+                                           "RETURN r.admin",
+                                           uid=uid,
+                                           pid=pid)
 
         return jsonify(str(match[0][0].get('r.admin')), 200)
 
@@ -166,22 +165,22 @@ class ProjectProvider(DatabaseProvider):
         if not self.__proj_exists(projname):
             return Response('No project could be found with that name!', 400)
 
-        member = self._driver.execute_query("MATCH (u:User {uuid: $uid}) -[:MEMBER_OF]-> (p:Proj {name: $projname}) RETURN p",
+        member = \
+        self._driver.execute_query("MATCH (u:User {uuid: $uid}) -[:MEMBER_OF]-> (p:Proj {name: $projname}) RETURN p",
                                    uid=uid, projname=projname)[0]
 
         if len(member) > 0:
             return Response('You are already a member of this project!', 400)
 
         self._driver.execute_query("MATCH (u:User {uuid: $uid})"
-                                "MATCH (p:Proj {name: $projname})"
-                                "MERGE (u) -[r:MEMBER_OF]-> (p)"
-                                "SET r.admin = $priv",
-                                uid = uid,
-                                projname=projname,
-                                priv = False
-                                )
+                                   "MATCH (p:Proj {name: $projname})"
+                                   "MERGE (u) -[r:MEMBER_OF]-> (p)"
+                                   "SET r.admin = $priv",
+                                   uid=uid,
+                                   projname=projname,
+                                   priv=False
+                                   )
         return jsonify(True)
-
 
     def post_user_rm(self, args: list[str], data) -> Response:
         if data_missing(('uid', 'pid'), data):
@@ -194,13 +193,12 @@ class ProjectProvider(DatabaseProvider):
             return Response('PID does not exist', 400)
 
         self._driver.execute_query("MATCH (u:User {uuid: $uid})"
-                                "-[r:MEMBER_OF]->(p:Proj {uuid: $pid})"
-                                "DELETE r",
-                                uid = uid,
-                                pid = pid
-                                )
+                                   "-[r:MEMBER_OF]->(p:Proj {uuid: $pid})"
+                                   "DELETE r",
+                                   uid=uid,
+                                   pid=pid
+                                   )
         return jsonify(True)
-
 
     def post_user_edit(self, args: list[str], data) -> Response:
         if data_missing(('uid', 'pid', 'admin'), data):
@@ -210,25 +208,23 @@ class ProjectProvider(DatabaseProvider):
         if not self.__uid_exists(uid):
             return Response('UID does not exist', 400)
         if not self.__pid_exists(pid):
-
             return Response('PID does not exist', 400)
 
         self._driver.execute_query("MATCH (u:User {uuid: $uid})"
-                                "-[r:MEMBER_OF]->(p:Proj {uuid: $pid})"
-                                "SET r.admin = $priv",
-                                uid = uid,
-                                pid = pid,
-                                priv = admin
-                                )
+                                   "-[r:MEMBER_OF]->(p:Proj {uuid: $pid})"
+                                   "SET r.admin = $priv",
+                                   uid=uid,
+                                   pid=pid,
+                                   priv=admin
+                                   )
         return jsonify(True)
-
 
     # this method  calls the above three as necessary
     def post_user(self, args: list[str], data) -> Response:
         try:
             if args[0] == 'add':
                 return self.post_user_add(args, data)
-            if args[0] == 'rm' :
+            if args[0] == 'rm':
                 return self.post_user_rm(args, data)
             if args[0] == 'edit':
                 return self.post_user_edit(args, data)
@@ -263,38 +259,36 @@ class ProjectProvider(DatabaseProvider):
 
             # create relationship to signify how many owned
             match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid})"
-                                       " MATCH (h:Hset {uuid: $hid})"
-                                       " MERGE (p)-[b:BORROWED]->(h)"
-                                       " ON CREATE "
-                                       " SET b.quant = $zero"
-                                       " WITH b"
-                                       " RETURN b.quant",
-                                       pid = data['pid'],
-                                       hid = data['hid'],
-                                       zero = 0
-                                       )
+                                               " MATCH (h:Hset {uuid: $hid})"
+                                               " MERGE (p)-[b:BORROWED]->(h)"
+                                               " ON CREATE "
+                                               " SET b.quant = $zero"
+                                               " WITH b"
+                                               " RETURN b.quant",
+                                               pid=data['pid'],
+                                               hid=data['hid'],
+                                               zero=0
+                                               )
             current_quantity = int(match[0][0].get("b.quant"))
             new_quantity = current_quantity + int(data['quant'])
             self._driver.execute_query("MATCH (p:Proj {uuid: $pid})-[b:BORROWED]->(h:Hset {uuid:$hid})"
                                        " SET b.quant = $quant",
-                                       pid = data['pid'],
-                                       hid = data['hid'],
-                                       quant = new_quantity)
+                                       pid=data['pid'],
+                                       hid=data['hid'],
+                                       quant=new_quantity)
             return jsonify(True)
         except Exception as e:
             return Response(str(e), 400)
 
-
-    def post_return(self, args:list[str], data) -> Response:
+    def post_return(self, args: list[str], data) -> Response:
         if data_missing(('hid', 'pid', 'quant'), data):
             return Response('Missing POST data', 400)
 
         try:
 
-
             match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) -[b:BORROWED]-> (h:Hset {uuid: $hid})"
                                                " RETURN b.quant",
-                                               pid = data['pid'], hid=data['hid'])[0]
+                                               pid=data['pid'], hid=data['hid'])[0]
             if len(match) < 1:
                 return Response('Project does not have this hardware set checked out', 400)
             old_quantity_borrowed = int(match[0].get("b.quant"))
@@ -308,17 +302,17 @@ class ProjectProvider(DatabaseProvider):
 
             if data['quant'] == old_quantity_borrowed:  # Removing all items
                 self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) -[b:BORROWED]-> (h:Hset {uuid: $hid})"
-                                               " DELETE",
-                                               pid = data['pid'], hid=data['hid'])
+                                           " DELETE",
+                                           pid=data['pid'], hid=data['hid'])
             else:
                 new_borrowed = old_quantity_borrowed - to_return
                 self._driver.execute_query("MATCH (p:Proj {uuid: $pid})"
                                            " MATCH (h:Hset {uuid: $hid})"
                                            " MERGE (p)-[b:BORROWED]->(h)"
                                            " SET b.quant = $new_borrowed",
-                                           pid = data['pid'],
-                                           hid = data['hid'],
-                                           new_borrowed = new_borrowed)
+                                           pid=data['pid'],
+                                           hid=data['hid'],
+                                           new_borrowed=new_borrowed)
 
             match = self._driver.execute_query("MATCH (h:Hset {uuid: $uuid})"
                                                "RETURN h.quant", uuid=data['hid'])[0]
@@ -334,7 +328,7 @@ class ProjectProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
-    def get_checkedout(self, args:list[str], params) -> Response:
+    def get_checkedout(self, args: list[str], params) -> Response:
         if data_missing(('hid', 'pid'), params):
             return Response('Missing POST data', 400)
 
@@ -347,11 +341,10 @@ class ProjectProvider(DatabaseProvider):
 
             match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) -[b:BORROWED]-> (h:Hset {uuid: $hid})"
                                                " RETURN b.quant",
-                                               pid = params['pid'], hid=params['hid'])[0]
+                                               pid=params['pid'], hid=params['hid'])[0]
 
             if len(match) < 1:
                 return Response('No hardware sets assigned to this project', 400)
-
 
             quantity_borrowed = int(match[0].get("b.quant"))
             return jsonify(quantity_borrowed)
@@ -359,10 +352,11 @@ class ProjectProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
-    def get_info(self, args:list[str], params) -> Response:
+    def get_info(self, args: list[str], params) -> Response:
         def get_all_hids():
             match = self._driver.execute_query("MATCH (h:Hset) RETURN h.uuid, h.name, h.desc, h.quant")[0]
-            return {item.get('h.uuid'): {'name': item.get('h.name'), 'desc': item.get('h.desc'), 'availability': item.get('h.quant'), 'checked_out': 0} for item in match}
+            return {item.get('h.uuid'): {'name': item.get('h.name'), 'desc': item.get('h.desc'),
+                                         'availability': item.get('h.quant'), 'checked_out': 0} for item in match}
 
         def get_borrowed(pid):
             match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) -[b:BORROWED]-> (h:Hset)"
@@ -381,14 +375,15 @@ class ProjectProvider(DatabaseProvider):
             if not self.__pid_exists(params['pid']):
                 return Response('Project with that pid does not exist', 400)
 
-            match = self._driver.execute_query("MATCH (u:User {uuid: $uid})-[m:MEMBER_OF]->(p:Proj {uuid: $pid}) RETURN m",
-                                               uid=params['uid'], pid=params['pid'])[0]
+            match = \
+            self._driver.execute_query("MATCH (u:User {uuid: $uid})-[m:MEMBER_OF]->(p:Proj {uuid: $pid}) RETURN m",
+                                       uid=params['uid'], pid=params['pid'])[0]
             if len(match) == 0:
                 return Response('You do not have access to this project!', 400)
 
             match = self._driver.execute_query("MATCH (p:Proj {uuid: $pid}) "
                                                " RETURN p.name, p.desc ",
-                                               pid = params['pid'])[0]
+                                               pid=params['pid'])[0]
 
             project_data = dict()
             project_name = match[0].get("p.name")
@@ -402,7 +397,7 @@ class ProjectProvider(DatabaseProvider):
             project_data["desc"] = description
 
             hardware_array = []
-            for item in hardware.items(): # Convert dict to an array
+            for item in hardware.items():  # Convert dict to an array
                 item[1]['hid'] = item[0]  # Add hid to the inner dict
                 hardware_array.append(item[1])
 
@@ -412,6 +407,3 @@ class ProjectProvider(DatabaseProvider):
 
         except Exception as e:
             return Response(str(e), 400)
-
-
-

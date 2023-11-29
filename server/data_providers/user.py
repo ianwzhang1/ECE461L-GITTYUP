@@ -41,6 +41,12 @@ class UserProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
+    def post_delete_noauth(self, args: list[str], data) -> Response: # Admin command
+        if data['bypass'] != 'unittest':
+            return Response('Unauthorized', 404)
+        self._driver.execute_query("MATCH (u:User {username: $username}) DETACH DELETE u", username=data['username'])
+        return Response('OK')
+
     def get_projects(self, args: list[str], params: dict[str, str]) -> Response:
         try:
             uid = params['uid']

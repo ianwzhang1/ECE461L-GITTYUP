@@ -106,6 +106,12 @@ class HardwareProvider(DatabaseProvider):
         except Exception as e:
             return Response(str(e), 400)
 
+    def post_delete_noauth(self, args: list[str], data) -> Response: # Admin command
+        if data['bypass'] != 'unittest':
+            return Response('Unauthorized', 404)
+        self._driver.execute_query("MATCH (h:Hset {name: $name}) DETACH DELETE h", name=data['name'])
+        return Response('OK')
+
     def post_quant(self, args: list[str], data) -> Response:
         if data_missing(('hid', 'quant'), data):
             return Response('Missing POST data', 400)
